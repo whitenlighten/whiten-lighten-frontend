@@ -117,6 +117,7 @@ interface AppointmentProps {
   patientId?: string;
   doctorId?: string;
   date?: Date;
+  timeslot: string;
   status: AppointmentStatus;
   createdAt: Date;
   updatedAt?: Date;

@@ -7,16 +7,15 @@ import { AppointmentProps, FetchAppointmentProps } from "@/lib/types";
 
 export const bookAppointmentRequest = async (data: appointmentValues) => {
   const url = `${API}${URLS.appointment.publicBooking}`;
-  const dateTimeString = `${data.date}T${data.time}`;
-  const isoDate = new Date(dateTimeString).toISOString();
   const payload = {
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,
     phone: data.phone,
-    date: isoDate,
+    date: data.date,
     service: data.services,
     reason: data.reason,
+    timeSlot: data.timeSlot,
   };
   console.log(url, payload);
 

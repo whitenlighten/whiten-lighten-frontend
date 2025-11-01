@@ -45,7 +45,7 @@ export function ContactSection() {
       date: "",
       email: "",
       firstName: "",
-      time: "02:00pm - 03:00pm  1h",
+      timeSlot: "02:00pm - 03:00pm  1h",
       lastName: "",
       phone: "",
       reason: "",
@@ -66,7 +66,7 @@ export function ContactSection() {
       phone: data.phone,
       reason: data.reason,
       services: data.services,
-      time: data.time,
+      timeSlot: data.timeSlot,
     };
     try {
       const res = await bookAppointmentRequest(payload);
@@ -264,7 +264,7 @@ export function ContactSection() {
                     />
 
                     <FormField
-                      name="time"
+                      name="timeSlot"
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>

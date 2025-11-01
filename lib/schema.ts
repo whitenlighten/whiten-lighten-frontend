@@ -53,7 +53,7 @@ export const bookAppointment = z.object({
     })
     .regex(/^0[789][01]\d{8}$/, "This is not a valid phone number"),
   date: z.string(),
-  time: z.enum(APPOINTMENT_TIMES, {
+  timeSlot: z.enum(APPOINTMENT_TIMES, {
     message: "Please select a valid time",
   }),
   services: z.enum(DENTAL_SERVICES, {

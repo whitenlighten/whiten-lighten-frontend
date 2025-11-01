@@ -283,7 +283,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
     header: "Time",
     cell: ({ row }) => {
       // return <div className=" ">{row.original.patient.}</div>;
-      return <div className=" ">{"test"}</div>;
+      return <div className=" ">{row.original.timeslot}</div>;
     },
   },
   {
@@ -292,8 +292,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
     cell: ({ row }) => {
       return (
         <div className="">
-          {/* {format(row.original.date ?? new Date(), "PPPP")} */}
-          <p>test</p>
+          {format(row.original.date ?? new Date(), "PPPP")}
         </div>
       );
     },
