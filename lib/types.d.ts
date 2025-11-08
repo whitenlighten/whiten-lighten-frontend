@@ -3,6 +3,7 @@ import {
   AppointmentStatus,
   BloodGroup,
   Gender,
+  MaritalStatus,
   Patient,
   PatientStatus,
   Role,
@@ -75,9 +76,9 @@ interface PatientProps {
   gender: Gender;
   dateOfBirth: Date | null;
   age: number | null;
-  maritalStatus: string | null;
+  maritalStatus: MaritalStatus | null;
   occupation: string | null;
-  religion: string | null;
+  religion: "Christian" | "Muslim" | "Other" | null;
   bloodGroup: BloodGroup | null;
   genotype: GenotypeProps | null;
   phone: string;

@@ -36,6 +36,9 @@ export const URLS = {
     oneById: "/patients/{id}",
     oneByPatientId: "/patients/one/{patientId}",
     approve: "/patients/{patientId}/approve",
+    archive: "/patients/{id}",
+    unarchive: "/patients/{id}/unarchive",
+    allArchived: "/patients/archived/all",
   },
 };
 

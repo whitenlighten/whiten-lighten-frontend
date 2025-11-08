@@ -1,5 +1,8 @@
 "use client";
 
+import ApproveAppointment from "@/components/shared/approve-appointment";
+import CancelAppointment from "@/components/shared/cancel-appointment";
+import CompleteAppointment from "@/components/shared/complete-appointment";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,21 +23,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { EllipsisVertical, Eye, SquarePen } from "lucide-react";
 import Link from "next/link";
-import {
-  AppointmentProps,
-  DummyAppointmentProps,
-  PatientProps,
-  UserProps,
-} from "./types";
+import { AppointmentProps, PatientProps, UserProps } from "./types";
 import {
   getActiveBadgeColor,
   getAppointmentStatusColor,
   getPatientStatusColor,
   getRoleBadgeColor,
 } from "./utils";
-import ApproveAppointment from "@/components/shared/approve-appointment";
-import CompleteAppointment from "@/components/shared/complete-appointment";
-import CancelAppointment from "@/components/shared/cancel-appointment";
 
 export const user_columns: ColumnDef<UserProps>[] = [
   {
