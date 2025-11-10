@@ -54,27 +54,16 @@ export default function PatientRegistrationForm() {
     mode: "all",
     resolver: zodResolver(createPatient),
     defaultValues: {
-      address: "",
-      age: age,
-      alternatePhone: "",
-      bloodGroup: "A_POS",
-      country: "",
-      dob: "",
-      email: "",
-      emergencyName: "",
-      emergencyPhone: "",
-      emergencyRelation: "",
       firstName: "",
-      gender: "FEMALE",
-      genotype: "AA",
       lastName: "",
-      lga: "",
-      maritalStatus: "SINGLE",
-      middleName: "",
-      occupation: "",
+      email: "",
       phone: "",
-      religion: "Christian",
-      state: "",
+      dob: "",
+      age: age,
+      gender: "FEMALE",
+      address: "",
+      maritalStatus: "SINGLE",
+      bloodGroup: "A_POS",
       registeredById: session.data?.user?.id,
       registrationType: session.data?.user?.role,
     },
@@ -112,7 +101,7 @@ export default function PatientRegistrationForm() {
               <User className="w-5 h-5 mr-2" />
               Personal Information
             </CardTitle>
-            <CardDescription>Basic user information</CardDescription>
+            <CardDescription>Basic patient information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -148,21 +137,7 @@ export default function PatientRegistrationForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="middleName"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Middle Name</FormLabel>
-                    <Input
-                      placeholder="Enter middle name"
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <FormField
                 control={form.control}
                 name="dob"
@@ -174,8 +149,7 @@ export default function PatientRegistrationForm() {
                         <Button
                           variant="outline"
                           id="date"
-                          className="w-full justify-between font-normal"
-                        >
+                          className="w-full justify-between font-normal">
                           {field.value
                             ? format(new Date(field.value), "PPP")
                             : "Select date"}
@@ -184,8 +158,7 @@ export default function PatientRegistrationForm() {
                       </PopoverTrigger>
                       <PopoverContent
                         className="w-auto overflow-hidden p-0"
-                        align="start"
-                      >
+                        align="start">
                         <Calendar
                           mode="single"
                           captionLayout="dropdown"
@@ -236,8 +209,7 @@ export default function PatientRegistrationForm() {
                     <FormLabel>Gender</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                      defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className=" w-full">
                           <SelectValue placeholder="Select a gender" />
@@ -264,8 +236,7 @@ export default function PatientRegistrationForm() {
                     <FormLabel>Marital Status</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                      defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className=" w-full">
                           <SelectValue placeholder="Select a gender" />
@@ -276,8 +247,7 @@ export default function PatientRegistrationForm() {
                           <SelectItem
                             className=""
                             value={marital_status}
-                            key={k}
-                          >
+                            key={k}>
                             {marital_status}
                           </SelectItem>
                         ))}
@@ -288,50 +258,7 @@ export default function PatientRegistrationForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="religion"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Religion</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {RELIGION.map((religion, k) => (
-                          <SelectItem className="" value={religion} key={k}>
-                            {religion}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="occupation"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Occupation *</FormLabel>
-                    <Input
-                      placeholder="Enter occupation"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="bloodGroup"
@@ -340,8 +267,7 @@ export default function PatientRegistrationForm() {
                     <FormLabel>Blood Group</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                      defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className=" w-full">
                           <SelectValue placeholder="Select a blood group" />
@@ -352,37 +278,8 @@ export default function PatientRegistrationForm() {
                           <SelectItem
                             className=""
                             value={bloodgroup.value}
-                            key={k}
-                          >
+                            key={k}>
                             {bloodgroup.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="genotype"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Genotype</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {GENOTYPE.map((genotype, k) => (
-                          <SelectItem className="" value={genotype} key={k}>
-                            {genotype}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -422,22 +319,7 @@ export default function PatientRegistrationForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="alternatePhone"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Alternate Phone Number *</FormLabel>
-                    <Input
-                      placeholder="Enter phone number"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -446,54 +328,6 @@ export default function PatientRegistrationForm() {
                     <FormLabel>Email Address *</FormLabel>
                     <Input
                       placeholder="Enter email address"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>State *</FormLabel>
-                    <Input
-                      placeholder="Enter state"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lga"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>L.G.A. *</FormLabel>
-                    <Input
-                      placeholder="Enter L.G.A."
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Country *</FormLabel>
-                    <Input
-                      placeholder="Enter country"
                       required
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
@@ -521,7 +355,7 @@ export default function PatientRegistrationForm() {
             />
           </CardContent>
         </Card>
-
+        {/* 
         <Card className="border-blue-100 mt-[30px]">
           <CardHeader>
             <CardTitle className="text-lg text-blue-900 flex items-center">
@@ -584,22 +418,20 @@ export default function PatientRegistrationForm() {
               />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <div className="flex mt-[20px] justify-end space-x-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            className="border-blue-200 text-blue-600 hover:bg-blue-50"
-          >
+            className="border-blue-200 text-blue-600 hover:bg-blue-50">
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
+            className="bg-blue-600 hover:bg-blue-700">
             {isLoading ? "Creating" : "Create Patient"}
           </Button>
         </div>
