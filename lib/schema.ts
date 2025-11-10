@@ -114,10 +114,7 @@ export const createPatient = z.object({
   lastName: z
     .string()
     .min(2, { message: "Lastname should be greater than two characters" }),
-  middleName: z
-    .string()
-    .min(2, { message: "Middle name should be greater than two characters" })
-    .optional(),
+  middleName: z.string().optional(),
   gender: z.enum(Gender, {
     message: "Please select a valid gender",
   }),
@@ -128,7 +125,7 @@ export const createPatient = z.object({
   }),
   occupation: z
     .string()
-    .min(2, { message: "Lastname should be greater than two characters" }),
+    .min(2, { message: "Occupation should be greater than two characters" }),
   religion: z.enum(RELIGION, {
     message: "Please select a valid religion",
   }),
@@ -168,4 +165,82 @@ export const createPatient = z.object({
   }),
   registrationType: z.string().optional(),
   registeredById: z.string().optional(),
+});
+
+export const updatePatient = z.object({
+  phone: z
+    .string({
+      message: "Please enter phone number.",
+    })
+    .regex(/^0[789][01]\d{8}$/, "This is not a valid phone number"),
+  email: z.email(),
+  firstName: z
+    .string()
+    .min(2, { message: "Firstname should be greater than two characters" }),
+  lastName: z
+    .string()
+    .min(2, { message: "Lastname should be greater than two characters" }),
+  middleName: z.string().optional(),
+  gender: z.enum(Gender, {
+    message: "Please select a valid gender",
+  }),
+  dateOfBirth: z.string(),
+  age: z.string(),
+  maritalStatus: z.enum(MaritalStatus, {
+    message: "Please select a valid marital status",
+  }),
+  occupation: z
+    .string()
+    .min(2, { message: "Occupation should be greater than two characters" })
+    .optional(),
+  religion: z.enum(RELIGION, {
+    message: "Please select a valid religion",
+  }),
+  bloodGroup: z.enum(BloodGroup, {
+    message: "Please select a valid blood group",
+  }),
+  genotype: z.enum(GENOTYPE, {
+    message: "Please select a valid genotype",
+  }),
+  alternatePhone: z
+    .string({
+      message: "Please enter phone number.",
+    })
+    .regex(/^0[789][01]\d{8}$/, "This is not a valid phone number")
+    .optional(),
+  address: z
+    .string()
+    .min(2, { message: "Address should be greater than two characters" }),
+  state: z
+    .string()
+    .min(2, { message: "State should be greater than two characters" })
+    .optional(),
+  lga: z
+    .string()
+    .min(2, { message: "LGA should be greater than two characters" })
+    .optional(),
+  country: z
+    .string()
+    .min(2, { message: "Country should be greater than two characters" })
+    .optional(),
+  emergencyName: z
+    .string()
+    .min(2, {
+      message: "Emergency name should be greater than two characters",
+    })
+    .optional(),
+  emergencyPhone: z
+    .string({
+      message: "Please enter phone number.",
+    })
+    .regex(/^0[789][01]\d{8}$/, "This is not a valid phone number")
+    .optional(),
+  emergencyRelation: z
+    .string()
+    .min(2, {
+      message: "Emergency relation should be greater than two characters",
+    })
+    .optional(),
+  // registrationType: z.string().optional(),
+  // registeredById: z.string().optional(),
 });

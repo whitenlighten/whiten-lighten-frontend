@@ -55,7 +55,7 @@ export default async function Appointments(props: {
           <div className=" flex flex-row gap-4">
             <SearchBar
               query={query}
-              placeholder="Search with first name, last name or email address"
+              placeholder="Search with reason or service"
             />
             <Filter
               searchTerm="status"

@@ -1,6 +1,9 @@
 import { getPatientsByID } from "@/actions/patients";
 import ApprovePatient from "@/components/shared/approve-patient";
-import PatientInformationDownload from "@/components/shared/patient-information-download";
+import {
+  ArchivePatientButton,
+  UnarchivePatientButton,
+} from "@/components/shared/archive-patient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -433,21 +436,31 @@ export default async function PatientDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent className=" flex flex-col gap-2 w-full">
-              <Button className=" w-full">Update Patient</Button>
-              {patient?.status != "ACTIVE" && (
-                <ApprovePatient patientId={patient.patientId} />
-              )}
-              {/* {patient?.status === "ACTIVE" && (
+              {patient.status === "ARCHIVED" ? (
+                <div className="">
+                  <UnarchivePatientButton id={patient.id} />
+                </div>
+              ) : (
+                <>
+                  <Button asChild className=" w-full">
+                    <Link href={`/patients/${patient.patientId}/edit`}>
+                      Update Patient
+                    </Link>
+                  </Button>
+                  {patient?.status != "ACTIVE" && (
+                    <ApprovePatient patientId={patient.patientId} />
+                  )}
+                  {/* {patient?.status === "ACTIVE" && (
                 <PatientInformationDownload patientId={patientId} />
               )} */}
-              <Button asChild className=" w-full">
-                <Link href={`/patients/${patientId}/appointments`}>
-                  View Appointment History
-                </Link>
-              </Button>
-              <Button className=" hover:bg-red-800 bg-[#f93e3e] w-full">
-                Archive Patient
-              </Button>
+                  <Button asChild className=" w-full">
+                    <Link href={`/patients/${patientId}/appointments`}>
+                      View Appointment History
+                    </Link>
+                  </Button>
+                  <ArchivePatientButton id={patient.id} />
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

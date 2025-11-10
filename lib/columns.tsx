@@ -1,5 +1,8 @@
 "use client";
 
+import ApproveAppointment from "@/components/shared/approve-appointment";
+import CancelAppointment from "@/components/shared/cancel-appointment";
+import CompleteAppointment from "@/components/shared/complete-appointment";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,21 +23,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { EllipsisVertical, Eye, SquarePen } from "lucide-react";
 import Link from "next/link";
-import {
-  AppointmentProps,
-  DummyAppointmentProps,
-  PatientProps,
-  UserProps,
-} from "./types";
+import { AppointmentProps, PatientProps, UserProps } from "./types";
 import {
   getActiveBadgeColor,
   getAppointmentStatusColor,
   getPatientStatusColor,
   getRoleBadgeColor,
 } from "./utils";
-import ApproveAppointment from "@/components/shared/approve-appointment";
-import CompleteAppointment from "@/components/shared/complete-appointment";
-import CancelAppointment from "@/components/shared/cancel-appointment";
 
 export const user_columns: ColumnDef<UserProps>[] = [
   {
@@ -280,7 +275,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
   },
   {
     accessorKey: "time",
-    header: "Time",
+    header: "Appointment Time",
     cell: ({ row }) => {
       // return <div className=" ">{row.original.patient.}</div>;
       return <div className=" ">{row.original.timeslot}</div>;
@@ -288,7 +283,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: "Appointment Date",
     cell: ({ row }) => {
       return (
         <div className="">
@@ -428,6 +423,63 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
             </DialogContent>
           </Dialog>
         </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const mini_appointment_columns: ColumnDef<AppointmentProps>[] = [
+  {
+    accessorKey: "service",
+    header: "Service Type",
+    cell: ({ row }) => {
+      return <div className=" w-[150px] truncate ">{row.original.service}</div>;
+    },
+  },
+  {
+    accessorKey: "time",
+    header: "Appointment Time",
+    cell: ({ row }) => {
+      // return <div className=" ">{row.original.patient.}</div>;
+      return <div className=" ">{row.original.timeslot}</div>;
+    },
+  },
+  {
+    accessorKey: "date",
+    header: "Appointment Date",
+    cell: ({ row }) => {
+      return (
+        <div className="">
+          {format(row.original.date ?? new Date(), "PPPP")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className=" text-center">Status</div>,
+    cell: ({ row }) => {
+      return (
+        <>
+          <div
+            className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getAppointmentStatusColor(
+              row.original.status as AppointmentStatus
+            )}`}
+          >
+            {row.original.status}
+          </div>
+        </>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      return (
+        <div className="">
+          {format(row.original.createdAt ?? new Date(), "PPPP")}
+        </div>
       );
     },
   },

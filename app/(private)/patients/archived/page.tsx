@@ -1,11 +1,11 @@
-import { getAllPatients } from "@/actions/patients";
+import { getAllArchivedPatients } from "@/actions/patients";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
 import { patient_columns } from "@/lib/columns";
 import { PATIENTFIELDS } from "@/lib/const";
-import { ArchiveRestore, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,7 +15,7 @@ export default async function Archived(props: { searchParams: SearchParams }) {
   const limit = searchParams.limit ?? 20;
   const query = searchParams.q;
 
-  const patients = await getAllPatients({
+  const patients = await getAllArchivedPatients({
     fields: PATIENTFIELDS,
     limit: Number(limit),
     page: Number(page),
@@ -35,16 +35,10 @@ export default async function Archived(props: { searchParams: SearchParams }) {
             </p>
           </div>
           <div className=" flex gap-2">
-            <Link href="/patients/archived">
+            <Link href="/patients">
               <Button className="bg-blue-600 hover:bg-blue-700">
-                <ArchiveRestore className="w-4 h-4 mr-2" />
-                View Archived
-              </Button>
-            </Link>
-            <Link href="/patients/new">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Patient
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                View All Patients
               </Button>
             </Link>
           </div>

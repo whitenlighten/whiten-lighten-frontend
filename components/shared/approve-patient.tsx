@@ -4,9 +4,12 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { approvePatient, getPatientsByPatientID } from "@/actions/patients";
 import { toast } from "sonner"; // or any other toast system
+import { useRouter } from "next/navigation";
 
 export default function ApprovePatient({ patientId }: { patientId: string }) {
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleApprove = async () => {
     setLoading(true);
@@ -14,11 +17,12 @@ export default function ApprovePatient({ patientId }: { patientId: string }) {
     const result = await approvePatient(patient?.id ?? "");
     setLoading(false);
 
-    if (result.success) {
-      toast.success("Patient approved successfully!");
-      // optional: refresh page or router.refresh() if using Next.js 13+
+    if (result) {
+      router.refresh();
+      toast.success("Patient admitted successfully!");
     } else {
-      toast.error(result.error || "Failed to approve patient");
+      router.refresh();
+      toast.error(result.error || "Failed to admit patient");
     }
   };
 
