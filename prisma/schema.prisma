@@ -8,134 +8,193 @@ datasource db {
 }
 
 model Appointment {
-  id        String            @id
-  patientId String
-  doctorId  String?
-  reason    String?
-  status    AppointmentStatus @default(PENDING)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime
-  date      DateTime
-  service   String            @default("General Consultation")
-  User      User?             @relation(fields: [doctorId], references: [id])
-  Patient   Patient           @relation(fields: [patientId], references: [id])
+  id               String             @id
+  patientId        String
+  doctorId         String?
+  date             DateTime
+  status           AppointmentStatus  @default(PENDING)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  reason           String?
+  service          String             @default("General Consultation")
+  timeslot         String
+  maritalStatus    MaritalStatus?
+  User             User?              @relation(fields: [doctorId], references: [id])
+  Patient          Patient            @relation(fields: [patientId], references: [id])
+  ClientAttendance ClientAttendance[]
+  DentalChart      DentalChart[]
+  DentalTreatment  DentalTreatment[]
+
+  @@index([createdAt])
+  @@index([date])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([status])
+  @@index([timeslot])
 }
 
 model ClinicalNote {
   id                                   String     @id
   patientId                            String
   createdById                          String
+  observations                         String?
+  doctorNotes                          String?
+  treatmentPlan                        String?
+  status                               NoteStatus @default(APPROVED)
   createdAt                            DateTime   @default(now())
   updatedAt                            DateTime
-  approvedById                         String?
-  doctorNotes                          String?
-  observations                         String?
-  status                               NoteStatus @default(APPROVED)
-  treatmentPlan                        String?
   visitId                              String?
+  approvedById                         String?
   User_ClinicalNote_approvedByIdToUser User?      @relation("ClinicalNote_approvedByIdToUser", fields: [approvedById], references: [id])
   User                                 User       @relation(fields: [createdById], references: [id])
   Patient                              Patient    @relation(fields: [patientId], references: [id])
   Visit                                Visit?     @relation(fields: [visitId], references: [id])
   User_DoctorApprovedNotes             User[]     @relation("DoctorApprovedNotes")
+
+  @@index([approvedById])
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([patientId])
+  @@index([status])
+  @@index([visitId])
 }
 
 model Patient {
-  id                                String           @id
+  id                                String               @id
+  patientId                         String               @unique
   firstName                         String
   lastName                          String
-  email                             String           @unique
-  phone                             String           @unique
+  middleName                        String?
+  gender                            Gender?
   dateOfBirth                       DateTime?
-  address                           String?
-  allergies                         String?
-  deletedAt                         DateTime?
-  createdAt                         DateTime         @default(now())
-  updatedAt                         DateTime
-  status                            PatientStatus    @default(ACTIVE)
   age                               Int?
-  alternatePhone                    String?
-  approvedAt                        DateTime?
+  maritalStatus                     MaritalStatus?
+  occupation                        String?
+  religion                          String?
   bloodGroup                        BloodGroup?
-  chronicConditions                 String?
-  country                           String?          @default("Nigeria")
-  createdById                       String?
-  currentMedications                String?
+  genotype                          String?
+  phone                             String               @unique
+  alternatePhone                    String?
+  email                             String               @unique
+  address                           String?
+  state                             String?
+  lga                               String?
+  country                           String?              @default("Nigeria")
   emergencyName                     String?
   emergencyPhone                    String?
   emergencyRelation                 String?
-  familyHistory                     String?
-  genotype                          String?
-  immunizationRecords               String?
-  insuranceNumber                   String?
-  insuranceProvider                 String?
-  lga                               String?
-  maritalStatus                     MaritalStatus?
-  middleName                        String?
-  occupation                        String?
+  allergies                         String?
+  chronicConditions                 String?
   pastMedicalHistory                String?
   pastSurgicalHistory               String?
-  patientId                         String           @unique
+  currentMedications                String?
+  immunizationRecords               String?
+  familyHistory                     String?
+  registrationType                  RegistrationType     @default(FRONTDESK)
+  registeredById                    String?
+  insuranceProvider                 String?
+  insuranceNumber                   String?
   paymentMethod                     PaymentMethod?
   primaryDoctorId                   String?
-  registeredById                    String?
-  registrationType                  RegistrationType @default(FRONTDESK)
-  religion                          String?
-  state                             String?
-  userId                            String?
-  gender                            Gender?
+  status                            PatientStatus        @default(ACTIVE)
+  createdAt                         DateTime             @default(now())
+  updatedAt                         DateTime
+  approvedAt                        DateTime?
+  deletedAt                         DateTime?
+  createdById                       String?
+  approvedById                      String?
+  userId                            String?              @unique
+  AestheticConsent                  AestheticConsent[]
+  AestheticProcedure                AestheticProcedure[]
   Appointment                       Appointment[]
   ClinicalNote                      ClinicalNote[]
+  CommunicationLog                  CommunicationLog[]
+  DentalChart                       DentalChart[]
+  DentalRecall                      DentalRecall[]
+  DentalTreatment                   DentalTreatment[]
+  EntNote                           EntNote[]
+  EntSymptom                        EntSymptom[]
   Invoice                           Invoice[]
+  IvSession                         IvSession[]
   NoteSuggestion                    NoteSuggestion[]
-  User_Patient_registeredByIdToUser User?            @relation("Patient_registeredByIdToUser", fields: [registeredById], references: [id])
-  User_Patient_userIdToUser         User?            @relation("Patient_userIdToUser", fields: [userId], references: [id])
+  Notification                      Notification[]
+  User_Patient_approvedByIdToUser   User?                @relation("Patient_approvedByIdToUser", fields: [approvedById], references: [id])
+  User_Patient_registeredByIdToUser User?                @relation("Patient_registeredByIdToUser", fields: [registeredById], references: [id])
+  User_Patient_userIdToUser         User?                @relation("Patient_userIdToUser", fields: [userId], references: [id])
+  PatientHistory                    PatientHistory[]
   Visit                             Visit[]
+  Payment                           Payment[]            @relation("PatientToPayment")
+
+  @@index([approvedById])
+  @@index([createdAt])
+  @@index([email])
+  @@index([firstName, lastName])
+  @@index([patientId])
+  @@index([phone])
+  @@index([registeredById])
+  @@index([status])
+  @@index([userId])
 }
 
 model RefreshToken {
   id        String   @id
-  userId    String
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-  revoked   Boolean  @default(false)
   token     String
+  userId    String
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@index([revoked])
+  @@index([token])
+  @@index([userId])
 }
 
 model User {
-  id                                               String           @id
-  email                                            String           @unique
+  id                                               String               @id
+  email                                            String               @unique
   password                                         String
-  role                                             Role
-  isActive                                         Boolean          @default(true)
-  createdAt                                        DateTime         @default(now())
-  updatedAt                                        DateTime
   firstName                                        String?
-  lastLogin                                        DateTime?
   lastName                                         String?
-  deletedAt                                        DateTime?
-  emailVerified                                    Boolean          @default(false)
-  phone                                            String?          @unique
+  phone                                            String?              @unique
+  role                                             Role
   specialization                                   String?
-  oauthId                                          String?
+  isActive                                         Boolean              @default(true)
+  emailVerified                                    Boolean              @default(false)
   oauthProvider                                    String?
-  twoFactorEnabled                                 Boolean          @default(false)
+  oauthId                                          String?
+  twoFactorEnabled                                 Boolean              @default(false)
   twoFactorSecret                                  String?
   twoFactorTempSecret                              String?
+  lastLogin                                        DateTime?
+  createdAt                                        DateTime             @default(now())
+  updatedAt                                        DateTime
+  deletedAt                                        DateTime?
+  AestheticConsent                                 AestheticConsent[]
+  AestheticProcedure                               AestheticProcedure[]
   Appointment                                      Appointment[]
   AuditLog                                         AuditLog[]
-  ClinicalNote_ClinicalNote_approvedByIdToUser     ClinicalNote[]   @relation("ClinicalNote_approvedByIdToUser")
+  ClinicalNote_ClinicalNote_approvedByIdToUser     ClinicalNote[]       @relation("ClinicalNote_approvedByIdToUser")
   ClinicalNote                                     ClinicalNote[]
-  NoteSuggestion_NoteSuggestion_approvedByIdToUser NoteSuggestion[] @relation("NoteSuggestion_approvedByIdToUser")
-  NoteSuggestion_NoteSuggestion_createdByIdToUser  NoteSuggestion[] @relation("NoteSuggestion_createdByIdToUser")
-  Patient_Patient_registeredByIdToUser             Patient[]        @relation("Patient_registeredByIdToUser")
-  Patient_Patient_userIdToUser                     Patient[]        @relation("Patient_userIdToUser")
+  EntNote                                          EntNote[]
+  EntSymptom                                       EntSymptom[]
+  Invoice_Invoice_createdByIdToUser                Invoice[]            @relation("Invoice_createdByIdToUser")
+  IvReaction                                       IvReaction[]
+  IvRecipe                                         IvRecipe[]
+  NoteSuggestion_NoteSuggestion_approvedByIdToUser NoteSuggestion[]     @relation("NoteSuggestion_approvedByIdToUser")
+  NoteSuggestion_NoteSuggestion_createdByIdToUser  NoteSuggestion[]     @relation("NoteSuggestion_createdByIdToUser")
+  Patient_Patient_approvedByIdToUser               Patient[]            @relation("Patient_approvedByIdToUser")
+  Patient_Patient_registeredByIdToUser             Patient[]            @relation("Patient_registeredByIdToUser")
+  Patient_Patient_userIdToUser                     Patient?             @relation("Patient_userIdToUser")
+  PatientHistory                                   PatientHistory[]
+  PharmacySale                                     PharmacySale[]
   RefreshToken                                     RefreshToken[]
-  ClinicalNote_DoctorApprovedNotes                 ClinicalNote[]   @relation("DoctorApprovedNotes")
-  NoteSuggestion_NurseCreatedNotes                 NoteSuggestion[] @relation("NurseCreatedNotes")
-
-  @@index([email])
+  StaffAttendance                                  StaffAttendance[]
+  Invoice_CreatedInvoices                          Invoice[]            @relation("CreatedInvoices")
+  ClinicalNote_DoctorApprovedNotes                 ClinicalNote[]       @relation("DoctorApprovedNotes")
+  NoteSuggestion_NurseCreatedNotes                 NoteSuggestion[]     @relation("NurseCreatedNotes")
 }
 
 model AuditLog {
@@ -147,23 +206,38 @@ model AuditLog {
   changes    Json?
   createdAt  DateTime @default(now())
   User       User?    @relation(fields: [userId], references: [id])
+
+  @@index([action])
+  @@index([resourceId])
+  @@index([resource])
+  @@index([userId])
 }
 
 model Invoice {
-  id          String        @id
-  patientId   String
-  amount      Float
-  status      InvoiceStatus @default(UNPAID)
-  currency    String        @default("NGN")
-  description String?
-  reference   String?       @unique
-  dueDate     DateTime?
-  metadata    Json?
-  issuedAt    DateTime      @default(now())
-  paidAt      DateTime?
-  updatedAt   DateTime
-  Patient     Patient       @relation(fields: [patientId], references: [id])
-  Payment     Payment[]
+  id                             String        @id
+  patientId                      String
+  amount                         Float
+  status                         InvoiceStatus @default(UNPAID)
+  currency                       String        @default("NGN")
+  description                    String?
+  reference                      String?       @unique
+  dueDate                        DateTime?
+  metadata                       Json?
+  created_at                     DateTime      @default(now())
+  issued_at                      DateTime      @default(now())
+  paidAt                         DateTime?
+  updatedAt                      DateTime
+  createdById                    String
+  User_Invoice_createdByIdToUser User          @relation("Invoice_createdByIdToUser", fields: [createdById], references: [id])
+  Patient                        Patient       @relation(fields: [patientId], references: [id])
+  Payment                        Payment[]
+  User_CreatedInvoices           User[]        @relation("CreatedInvoices")
+
+  @@index([createdById])
+  @@index([issued_at])
+  @@index([patientId])
+  @@index([reference])
+  @@index([status])
 }
 
 model NoteSuggestion {
@@ -179,6 +253,12 @@ model NoteSuggestion {
   User_NoteSuggestion_createdByIdToUser  User       @relation("NoteSuggestion_createdByIdToUser", fields: [createdById], references: [id])
   Patient                                Patient    @relation(fields: [patientId], references: [id])
   User_NurseCreatedNotes                 User[]     @relation("NurseCreatedNotes")
+
+  @@index([approvedById])
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([patientId])
+  @@index([status])
 }
 
 model PatientCounter {
@@ -195,20 +275,408 @@ model Visit {
   notes        String?
   ClinicalNote ClinicalNote[]
   Patient      Patient        @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([reason])
+  @@index([visitDate])
 }
 
 model Payment {
-  id             String        @id
+  id             String    @id
   invoiceId      String
   amount         Float
-  method         PaymentMethod
-  status         PaymentStatus @default(PENDING)
-  transactionRef String?       @unique
-  gateway        String?
   note           String?
-  createdAt      DateTime      @default(now())
-  paidAt         DateTime?
-  Invoice        Invoice       @relation(fields: [invoiceId], references: [id])
+  method         String
+  gateway        String?
+  transactionRef String?   @unique
+  status         String    @default("SUCCESS")
+  paidAt         DateTime  @default(now())
+  createdById    String?
+  Invoice        Invoice   @relation(fields: [invoiceId], references: [id])
+  Patient        Patient[] @relation("PatientToPayment")
+
+  @@index([createdById])
+  @@index([invoiceId])
+  @@index([method])
+  @@index([paidAt])
+  @@index([status])
+  @@index([transactionRef])
+}
+
+model AestheticAddon {
+  id                 String             @id
+  procedureId        String
+  name               String
+  price              Float?
+  notes              String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime
+  deletedAt          DateTime?
+  AestheticProcedure AestheticProcedure @relation(fields: [procedureId], references: [id])
+
+  @@index([procedureId])
+}
+
+model AestheticConsent {
+  id        String    @id
+  patientId String
+  doctorId  String?
+  fileUrl   String
+  signedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+  User      User?     @relation(fields: [doctorId], references: [id])
+  Patient   Patient   @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([signedAt])
+}
+
+model AestheticProcedure {
+  id             String           @id
+  patientId      String
+  doctorId       String
+  name           String
+  description    String?
+  cost           Float?
+  scheduledAt    DateTime?
+  status         String           @default("SCHEDULED")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  deletedAt      DateTime?
+  AestheticAddon AestheticAddon[]
+  User           User             @relation(fields: [doctorId], references: [id])
+  Patient        Patient          @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+model AuditTrail {
+  id         String   @id
+  actorId    String
+  actorRole  String
+  action     String
+  entityType String
+  entityId   String
+  details    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([entityId])
+  @@index([entityType])
+}
+
+model ClientAttendance {
+  id            String      @id
+  appointmentId String
+  attended      Boolean
+  status        String
+  notes         String?
+  createdAt     DateTime    @default(now())
+  Appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  @@index([appointmentId])
+  @@index([attended])
+  @@index([createdAt])
+  @@index([status])
+}
+
+model CommunicationLog {
+  id        String   @id
+  type      String
+  message   String
+  createdAt DateTime @default(now())
+  patientId String
+  Patient   Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([patientId])
+  @@index([type])
+}
+
+model DentalChart {
+  id            String       @id
+  patientId     String
+  appointmentId String?
+  chartData     String?
+  notes         String?
+  createdById   String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime
+  updatedBy     String?
+  Appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  Patient       Patient      @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([appointmentId])
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([updatedBy])
+}
+
+model DentalRecall {
+  id          String   @id
+  patientId   String
+  recallDate  DateTime
+  reason      String?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  Patient     Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([recallDate])
+}
+
+model DentalTreatment {
+  id            String       @id
+  patientId     String
+  appointmentId String?
+  procedure     String
+  description   String?
+  performedBy   String?
+  cost          Float?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime
+  updatedBy     String?
+  Appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  Patient       Patient      @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+  @@index([appointmentId])
+  @@index([createdAt])
+  @@index([performedBy])
+  @@index([updatedBy])
+}
+
+model EntNote {
+  id        String    @id
+  patientId String
+  doctorId  String
+  title     String?
+  content   String
+  status    String    @default("ACTIVE")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  updatedBy String?
+  deletedBy String?
+  deletedAt DateTime?
+  User      User      @relation(fields: [doctorId], references: [id])
+  Patient   Patient   @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model EntSymptom {
+  id        String    @id
+  patientId String
+  doctorId  String
+  symptom   String
+  severity  String?
+  note      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  updatedBy String?
+  deletedBy String?
+  deletedAt DateTime?
+  User      User      @relation(fields: [doctorId], references: [id])
+  Patient   Patient   @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([doctorId])
+  @@index([patientId])
+}
+
+model IvReaction {
+  id           String    @id
+  sessionId    String
+  type         String
+  severity     String?
+  notes        String?
+  recordedById String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  deletedAt    DateTime?
+  User         User?     @relation(fields: [recordedById], references: [id])
+  IvSession    IvSession @relation(fields: [sessionId], references: [id])
+
+  @@index([recordedById])
+  @@index([sessionId])
+  @@index([severity])
+  @@index([type])
+}
+
+model IvRecipe {
+  id          String      @id
+  name        String
+  description String?
+  ingredients String[]
+  createdById String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  deletedAt   DateTime?
+  User        User?       @relation(fields: [createdById], references: [id])
+  IvSession   IvSession[]
+
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([deletedAt])
+}
+
+model IvSession {
+  id         String       @id
+  patientId  String
+  recipeId   String
+  doctorId   String
+  date       DateTime
+  status     String       @default("SCHEDULED")
+  notes      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  deletedAt  DateTime?
+  IvReaction IvReaction[]
+  Patient    Patient      @relation(fields: [patientId], references: [id])
+  IvRecipe   IvRecipe     @relation(fields: [recipeId], references: [id])
+
+  @@index([createdAt])
+  @@index([date])
+  @@index([deletedAt])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([recipeId])
+  @@index([status])
+}
+
+model Notification {
+  id          String   @id
+  recipientId String
+  title       String
+  message     String
+  type        String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  Patient     Patient  @relation(fields: [recipientId], references: [id])
+
+  @@index([createdAt])
+  @@index([read])
+  @@index([recipientId])
+  @@index([type])
+}
+
+model PatientHistory {
+  id          String   @id
+  type        String
+  notes       String
+  createdAt   DateTime @default(now())
+  patientId   String
+  createdById String?
+  User        User?    @relation(fields: [createdById], references: [id])
+  Patient     Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([patientId])
+  @@index([type])
+}
+
+model Reminder {
+  id          String   @id
+  email       String
+  subject     String?
+  message     String
+  scheduledAt DateTime
+  sent        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([scheduledAt])
+  @@index([sent])
+}
+
+model StaffAttendance {
+  id        String    @id
+  staffId   String
+  clockIn   DateTime  @default(now())
+  clockOut  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  User      User      @relation(fields: [staffId], references: [id])
+
+  @@index([clockIn])
+  @@index([clockOut])
+  @@index([createdAt])
+  @@index([staffId])
+}
+
+model PharmacyItem {
+  id           String         @id
+  sku          String         @unique
+  name         String
+  description  String?
+  unitPrice    Float
+  stock        Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  PharmacySale PharmacySale[]
+
+  @@index([createdAt])
+  @@index([name])
+  @@index([sku])
+  @@index([stock])
+}
+
+model PharmacySale {
+  id           String       @id
+  itemId       String
+  quantity     Int
+  totalAmount  Float
+  createdById  String?
+  createdAt    DateTime     @default(now())
+  User         User?        @relation(fields: [createdById], references: [id])
+  PharmacyItem PharmacyItem @relation(fields: [itemId], references: [id])
+
+  @@index([createdAt])
+  @@index([createdById])
+  @@index([itemId])
+}
+
+model Task {
+  id          String    @id
+  title       String
+  description String?
+  dueAt       DateTime?
+  completed   Boolean   @default(false)
+  createdById String?
+  assignedTo  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+
+  @@index([assignedTo])
+  @@index([completed])
+  @@index([createdById])
+  @@index([dueAt])
+  @@index([title])
 }
 
 enum AppointmentStatus {
@@ -217,6 +685,7 @@ enum AppointmentStatus {
   CANCELLED
   COMPLETED
   NO_SHOW
+  RESCHEDULED
 }
 
 enum PatientStatus {
@@ -233,6 +702,7 @@ enum Role {
   NURSE
   FRONTDESK
   PATIENT
+  PHARMACIST
 }
 
 enum BloodGroup {
@@ -278,6 +748,7 @@ enum PaymentMethod {
   HMO
   TRANSFER
   CARD
+  GATEWAY
 }
 
 enum RegistrationType {
@@ -292,4 +763,11 @@ enum PaymentStatus {
   SUCCESS
   FAILED
   REFUNDED
+}
+
+enum NotificationType {
+  APPOINTMENT
+  REMINDER
+  BILLING
+  SYSTEM
 }

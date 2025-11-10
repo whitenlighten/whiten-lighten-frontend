@@ -1,22 +1,34 @@
-import { getAllArchivedPatients } from "@/actions/patients";
+import { getAllAppointments } from "@/actions/appointment";
+import { getAppointmentsForPatient, getPatientsByID } from "@/actions/patients";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
+import Filter from "@/components/shared/filter";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
-import { patient_columns } from "@/lib/columns";
-import { PATIENTFIELDS } from "@/lib/const";
-import { ArrowLeft } from "lucide-react";
+import { appointment_columns, mini_appointment_columns } from "@/lib/columns";
+import { Status } from "@/lib/const";
+// import { appointment_columns } from "@/lib/columns";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-export default async function Archived(props: { searchParams: SearchParams }) {
+type Params = Promise<{ patientId: string }>;
+export default async function Appointment(props: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const searchParams = await props.searchParams;
   const page = searchParams.page ?? 1;
   const limit = searchParams.limit ?? 20;
   const query = searchParams.q;
+  const status = searchParams.status;
 
-  const patients = await getAllArchivedPatients({
-    fields: PATIENTFIELDS,
+  const { patientId } = await props.params;
+
+  const patient = await getPatientsByID(patientId);
+
+  // const appointments = DUMMY_APPOINTMENT;
+  const appointments = await getAppointmentsForPatient(patient?.id ?? "", {
     limit: Number(limit),
     page: Number(page),
     query: query,
@@ -28,41 +40,39 @@ export default async function Archived(props: { searchParams: SearchParams }) {
         <div className="flex justify-between gap-2 flex-wrap items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Archived Patients ({patients?.totalRecord ?? 0})
+              Appointment History ({appointments?.totalRecord ?? 0})
             </h1>
             <p className="text-gray-600">
-              Manage patient records and information
+              Manage apointment records and information
             </p>
-          </div>
-          <div className=" flex gap-2">
-            <Link href="/patients">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                View All Patients
-              </Button>
-            </Link>
           </div>
         </div>
 
-        <div className=" w-full">
+        <div className="">
+          {/* <AppointmentCard /> */}
           <div className=" flex flex-row gap-4">
             <SearchBar
               query={query}
               placeholder="Search with first name, last name or email address"
+            />
+            <Filter
+              searchTerm="status"
+              data={Status}
+              placeholder="Filter status"
             />
           </div>
 
           <DataTable
             showColumnButton={false}
             showSearch={false}
-            columns={patient_columns}
-            data={patients?.records ?? []}
+            columns={mini_appointment_columns}
+            data={appointments?.records ?? []}
           />
           <br />
-          {patients?.totalRecord >= 20 && (
+          {appointments?.totalRecord >= 20 && (
             <PaginationComponent
               limit={Number(limit)}
-              totalItems={patients?.totalRecord}
+              totalItems={appointments?.totalRecord}
               siblingCount={1}
             />
           )}

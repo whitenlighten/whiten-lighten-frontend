@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { MARITAL_STATUS } from "@/lib/const";
 
 export type appointmentValues = z.infer<typeof bookAppointment>;
 export function ContactSection() {
@@ -44,11 +45,12 @@ export function ContactSection() {
       date: "",
       email: "",
       firstName: "",
-      time: "08:00",
+      timeSlot: "02:00pm - 03:00pm  1h",
       lastName: "",
       phone: "",
       reason: "",
-      services: "Dental Implants",
+      services: "Aesthentic Medicine",
+      marital_status: "DIVORCED",
     },
     mode: "all",
   });
@@ -56,6 +58,7 @@ export function ContactSection() {
   const handleSubmit = async (data: appointmentValues) => {
     setLoading(true);
     const payload: appointmentValues = {
+      marital_status: data.marital_status,
       date: data.date,
       email: data.email,
       firstName: data.firstName,
@@ -63,7 +66,7 @@ export function ContactSection() {
       phone: data.phone,
       reason: data.reason,
       services: data.services,
-      time: data.time,
+      timeSlot: data.timeSlot,
     };
     try {
       const res = await bookAppointmentRequest(payload);
@@ -213,6 +216,35 @@ export function ContactSection() {
                     />
 
                     <FormField
+                      name="marital_status"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Marital Status</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={loading}
+                          >
+                            <FormControl>
+                              <SelectTrigger className=" w-full">
+                                <SelectValue placeholder="Select a service" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {MARITAL_STATUS.map((item, k) => (
+                                <SelectItem key={k} value={item}>
+                                  {item}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
                       name="date"
                       control={form.control}
                       render={({ field }) => (
@@ -232,7 +264,7 @@ export function ContactSection() {
                     />
 
                     <FormField
-                      name="time"
+                      name="timeSlot"
                       control={form.control}
                       render={({ field }) => (
                         <FormItem>

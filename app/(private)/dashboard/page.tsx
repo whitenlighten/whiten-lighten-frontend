@@ -1,3 +1,4 @@
+import { getAllAppointments } from "@/actions/appointment";
 import { getCurrentUser } from "@/actions/auth";
 import { getAllPatients } from "@/actions/patients";
 import { getAllUsers } from "@/actions/users";
@@ -16,10 +17,14 @@ export default async function DashboardPage() {
     limit: 20,
     page: 1,
   });
+  const appointments = await getAllAppointments({
+    limit: 1,
+    page: 20,
+  });
 
-  const mockStats = {
+  const stats = {
     totalPatients: patients?.totalRecord ?? 0,
-    todayAppointments: 0,
+    todayAppointments: appointments?.totalRecord ?? 0,
     pendingNotes: 0,
     activeUsers: users?.totalRecord ?? 0,
   };
@@ -50,7 +55,7 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <DashboardStats stats={mockStats} userRole={user.role} />
+            <DashboardStats stats={stats} userRole={user.role} />
             <RecentActivity userRole={user.role} />
             {/* {user.role === "PATIENT" && <AppointmentsWidget />} */}
           </div>

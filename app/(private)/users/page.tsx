@@ -5,7 +5,7 @@ import Filter from "@/components/shared/filter";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
 import { user_columns } from "@/lib/columns";
-import { FIELDS } from "@/lib/const";
+import { FIELDS, Roles } from "@/lib/const";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -58,7 +58,11 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
               query={query}
               placeholder="Search with first name, last name or email address"
             />
-            <Filter role={role} placeholder="Filter role" />
+            <Filter
+              data={Roles}
+              searchTerm={"role"}
+              placeholder="Filter role"
+            />
           </div>
 
           <DataTable

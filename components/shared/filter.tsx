@@ -14,10 +14,12 @@ import {
 
 export default function Filter({
   placeholder,
-  role,
+  data,
+  searchTerm,
 }: {
   placeholder: string;
-  role: string | string[] | undefined;
+  searchTerm: string | string[] | undefined;
+  data: string[];
 }) {
   const [selected, setSelected] = useState("");
 
@@ -39,22 +41,28 @@ export default function Filter({
     },
     [searchParams]
   );
-
+  console.log({ searchTerm });
   useEffect(() => {
-    if (role && typeof role === "string") {
-      setSelected(role);
+    if (data && typeof data === "string") {
+      setSelected(data);
     } else {
       setSelected("");
     }
-  }, [role]);
+  }, [data]);
 
   const handleChange = (value: string) => {
     if (value === "none") {
       setSelected("");
-      router.push(pathname + "?" + createQueryString("role", undefined));
+      router.push(
+        pathname +
+          "?" +
+          createQueryString(`${searchTerm?.toString()}`, undefined)
+      );
     } else {
       setSelected(value);
-      router.push(pathname + "?" + createQueryString("role", value));
+      router.push(
+        pathname + "?" + createQueryString(`${searchTerm?.toString()}`, value)
+      );
     }
   };
 
@@ -67,9 +75,9 @@ export default function Filter({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="none">No Selection</SelectItem>
-          {Roles.map((role, k) => (
-            <SelectItem key={k} value={role}>
-              {role}
+          {data.map((data, k) => (
+            <SelectItem key={k} value={data}>
+              {data}
             </SelectItem>
           ))}
         </SelectContent>

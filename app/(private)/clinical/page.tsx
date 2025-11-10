@@ -34,7 +34,7 @@ export default async function ClinicalPage() {
           )}
         </div>
 
-        <ClinicalNotesTable userRole={user.role} />
+        <p>INCOMING UPDATE</p>
       </main>
     </div>
   );

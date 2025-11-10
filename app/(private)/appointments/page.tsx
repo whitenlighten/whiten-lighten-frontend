@@ -1,24 +1,32 @@
+import { getAllAppointments } from "@/actions/appointment";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
+import Filter from "@/components/shared/filter";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
 import { appointment_columns } from "@/lib/columns";
-import { DUMMY_APPOINTMENT } from "@/lib/const";
+import { Status } from "@/lib/const";
 // import { appointment_columns } from "@/lib/columns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-export default async function Appointment(props: {
+export default async function Appointments(props: {
   searchParams: SearchParams;
 }) {
   const searchParams = await props.searchParams;
   const page = searchParams.page ?? 1;
   const limit = searchParams.limit ?? 20;
   const query = searchParams.q;
+  const status = searchParams.status;
 
-  const appointments = DUMMY_APPOINTMENT;
-  // const appointments = await getAllAppointments();
+  // const appointments = DUMMY_APPOINTMENT;
+  const appointments = await getAllAppointments({
+    limit: Number(limit),
+    page: Number(page),
+    query: query,
+    status: status,
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -26,7 +34,7 @@ export default async function Appointment(props: {
         <div className="flex justify-between gap-2 flex-wrap items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Appointment (10)
+              Appointment ({appointments?.totalRecord ?? 0})
             </h1>
             <p className="text-gray-600">
               Manage apointment records and information
@@ -47,7 +55,12 @@ export default async function Appointment(props: {
           <div className=" flex flex-row gap-4">
             <SearchBar
               query={query}
-              placeholder="Search with first name, last name or email address"
+              placeholder="Search with reason or service"
+            />
+            <Filter
+              searchTerm="status"
+              data={Status}
+              placeholder="Filter status"
             />
           </div>
 
@@ -55,13 +68,13 @@ export default async function Appointment(props: {
             showColumnButton={false}
             showSearch={false}
             columns={appointment_columns}
-            data={appointments.data ?? []}
+            data={appointments?.appointments ?? []}
           />
           <br />
-          {appointments?.meta.total_record >= 20 && (
+          {appointments?.totalRecord >= 20 && (
             <PaginationComponent
               limit={Number(limit)}
-              totalItems={appointments?.meta.total_record}
+              totalItems={appointments?.totalRecord}
               siblingCount={1}
             />
           )}
