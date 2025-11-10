@@ -1,11 +1,11 @@
 import { getAllAppointments } from "@/actions/appointment";
-import { getPatientsByID } from "@/actions/patients";
+import { getAppointmentsForPatient, getPatientsByID } from "@/actions/patients";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
 import Filter from "@/components/shared/filter";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
-import { appointment_columns } from "@/lib/columns";
+import { appointment_columns, mini_appointment_columns } from "@/lib/columns";
 import { Status } from "@/lib/const";
 // import { appointment_columns } from "@/lib/columns";
 import { Plus } from "lucide-react";
@@ -28,11 +28,10 @@ export default async function Appointment(props: {
   const patient = await getPatientsByID(patientId);
 
   // const appointments = DUMMY_APPOINTMENT;
-  const appointments = await getAllAppointments({
+  const appointments = await getAppointmentsForPatient(patient?.id ?? "", {
     limit: Number(limit),
     page: Number(page),
     query: query,
-    status: status,
   });
 
   return (
@@ -41,20 +40,11 @@ export default async function Appointment(props: {
         <div className="flex justify-between gap-2 flex-wrap items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {`${patient?.firstName} ${patient?.lastName}'s`} Appointment
-              History ({appointments?.totalRecord ?? 0})
+              Appointment History ({appointments?.totalRecord ?? 0})
             </h1>
             <p className="text-gray-600">
               Manage apointment records and information
             </p>
-          </div>
-          <div className=" flex gap-2">
-            <Link href="/patients/new">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Book appointment
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -75,8 +65,8 @@ export default async function Appointment(props: {
           <DataTable
             showColumnButton={false}
             showSearch={false}
-            columns={appointment_columns}
-            data={appointments?.appointments ?? []}
+            columns={mini_appointment_columns}
+            data={appointments?.records ?? []}
           />
           <br />
           {appointments?.totalRecord >= 20 && (

@@ -1,8 +1,9 @@
 "use client";
 
-import { createPatientPost } from "@/actions/patients";
+import { createPatientPost, updatePatientPatch } from "@/actions/patients";
 import { BLOODGROUP, GENDER, GENOTYPE, MARITAL_STATUS } from "@/lib/const";
-import { createPatient, RELIGION } from "@/lib/schema";
+import { RELIGION, updatePatient } from "@/lib/schema";
+import { PatientProps } from "@/lib/types";
 import { calculateAge } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -40,9 +41,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { PatientProps } from "@/lib/types";
 
-export type CreatePatientValues = z.infer<typeof createPatient>;
+export type UpdatePatientValues = z.infer<typeof updatePatient>;
 export default function PatientUpdateForm({
   patient,
 }: {
@@ -51,20 +51,23 @@ export default function PatientUpdateForm({
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [age, setAge] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
   const session = useSession();
 
   const router = useRouter();
 
-  const form = useForm<CreatePatientValues>({
-    mode: "all",
-    resolver: zodResolver(createPatient),
+  const form = useForm<UpdatePatientValues>({
+    mode: "onChange",
+    // resolver: zodResolver(updatePatient),
     defaultValues: {
       address: patient?.address ?? "",
-      age: patient?.age?.toString() ?? "",
+      age: patient?.age?.toString() ?? age,
       alternatePhone: patient?.alternatePhone ?? "",
       bloodGroup: patient?.bloodGroup ?? "A_POS",
       country: patient?.country ?? "",
-      dateOfBirth: patient?.dateOfBirth?.toDateString() ?? "",
+      dateOfBirth: patient?.dateOfBirth
+        ? new Date(patient.dateOfBirth).toISOString()
+        : "",
       email: patient?.email ?? "",
       emergencyName: patient?.emergencyName ?? "",
       emergencyPhone: patient?.emergencyPhone ?? "",
@@ -80,8 +83,8 @@ export default function PatientUpdateForm({
       phone: patient?.phone ?? "",
       religion: patient?.religion ?? "Christian",
       state: patient?.state ?? "",
-      registeredById: session.data?.user?.id,
-      registrationType: session.data?.user?.role,
+      // registeredById: session.data?.user?.id,
+      // registrationType: session.data?.user?.role,
     },
   });
 
@@ -93,24 +96,35 @@ export default function PatientUpdateForm({
     }
   }, [calcAge]);
 
-  const handleSubmit = async (data: CreatePatientValues) => {
+  // console.log({ patient });
+
+  const handleSubmit = async (data: UpdatePatientValues) => {
+    if (!isEditing) return;
+
     setIsLoading(true);
-    const res = await createPatientPost(data);
+    console.log({ data });
+    const res = await updatePatientPatch(data, patient?.id ?? "");
 
     if (res !== null) {
-      toast.success("Patient created successfully");
-      router.push(`/patients`);
+      toast.success("Patient updated successfully");
+      router.push(`/patients/${patient?.patientId}`);
       setIsLoading(false);
     } else {
-      toast.error("Patient was not created");
+      toast.error("Patient was not updated");
       router.refresh();
       form.reset();
       setIsLoading(false);
     }
   };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(form.getValues());
+        }}
+      >
         <Card className="border-blue-100">
           <CardHeader>
             <CardTitle className="text-lg text-blue-900 flex items-center">
@@ -128,8 +142,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>First Name *</FormLabel>
                     <Input
-                      placeholder="Enter first name (e.g., John)"
-                      required
+                      placeholder={"No information provided"}
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -144,8 +158,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Last Name *</FormLabel>
                     <Input
-                      placeholder="Enter last name (e.g., Smith)"
-                      required
+                      placeholder={"No information provided"}
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -160,7 +174,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Middle Name</FormLabel>
                     <Input
-                      placeholder="Enter middle name"
+                      placeholder={"No information provided"}
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -178,12 +193,13 @@ export default function PatientUpdateForm({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
+                          disabled={!isEditing}
                           id="date"
                           className="w-full justify-between font-normal"
                         >
                           {field.value
                             ? format(new Date(field.value), "PPP")
-                            : "Select date"}
+                            : "No information provided"}
                           <ChevronDownIcon />
                         </Button>
                       </PopoverTrigger>
@@ -222,8 +238,7 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Age</FormLabel>
                     <Input
-                      placeholder="Enter age"
-                      required
+                      placeholder="No information provided"
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                       readOnly
@@ -233,94 +248,129 @@ export default function PatientUpdateForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {GENDER.map((gender, k) => (
-                          <SelectItem className="" value={gender} key={k}>
-                            {gender}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="maritalStatus"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Marital Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {MARITAL_STATUS.map((marital_status, k) => (
-                          <SelectItem
-                            className=""
-                            value={marital_status}
-                            key={k}
+              {isEditing === false && patient?.gender === null ? (
+                <div className=" flex flex-col gap-4">
+                  <FormLabel>Gender</FormLabel>
+                  <Input disabled placeholder="No information provided" />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={
+                          patient?.gender ? patient.gender : field.value
+                        }
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            disabled={!isEditing}
+                            className=" w-full"
                           >
-                            {marital_status}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            <SelectValue placeholder="Select gentder"></SelectValue>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {GENDER.map((gender, k) => (
+                            <SelectItem className="" value={gender} key={k}>
+                              {gender}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="religion"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Religion</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {RELIGION.map((religion, k) => (
-                          <SelectItem className="" value={religion} key={k}>
-                            {religion}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {isEditing === false && patient?.maritalStatus === null ? (
+                <div className=" flex flex-col gap-4">
+                  <FormLabel>Marital Status</FormLabel>
+                  <Input disabled placeholder="No information provided" />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="maritalStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Marital Status</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            disabled={!isEditing}
+                            className=" w-full"
+                          >
+                            <SelectValue placeholder="Select a gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {MARITAL_STATUS.map((marital_status, k) => (
+                            <SelectItem
+                              className=""
+                              value={marital_status}
+                              key={k}
+                            >
+                              {marital_status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {isEditing === false && patient?.religion === null ? (
+                <div className=" flex flex-col gap-4">
+                  <FormLabel>Religion</FormLabel>
+                  <Input disabled placeholder="No information provided" />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="religion"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Religion</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            disabled={!isEditing}
+                            className=" w-full"
+                          >
+                            <SelectValue placeholder="Select a gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {RELIGION.map((religion, k) => (
+                            <SelectItem className="" value={religion} key={k}>
+                              {religion}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="occupation"
@@ -328,8 +378,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Occupation *</FormLabel>
                     <Input
-                      placeholder="Enter occupation"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -337,66 +387,88 @@ export default function PatientUpdateForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="bloodGroup"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Blood Group</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a blood group" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {BLOODGROUP.map((bloodgroup, k) => (
-                          <SelectItem
-                            className=""
-                            value={bloodgroup.value}
-                            key={k}
+
+              {!isEditing && patient?.bloodGroup === null ? (
+                <div className=" flex flex-col gap-4">
+                  <FormLabel>Blood Group</FormLabel>
+                  <Input disabled placeholder="No information provided" />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="bloodGroup"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Blood Group</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            disabled={!isEditing}
+                            className=" w-full"
                           >
-                            {bloodgroup.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            <SelectValue placeholder="Select a blood group" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {BLOODGROUP.map((bloodgroup, k) => (
+                            <SelectItem
+                              className=""
+                              value={bloodgroup.value}
+                              key={k}
+                            >
+                              {bloodgroup.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="genotype"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Genotype</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className=" w-full">
-                          <SelectValue placeholder="Select a gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {GENOTYPE.map((genotype, k) => (
-                          <SelectItem className="" value={genotype} key={k}>
-                            {genotype}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!isEditing && patient?.genotype === null ? (
+                <div className=" flex flex-col gap-4">
+                  <FormLabel>Genotype</FormLabel>
+                  <Input disabled placeholder="No information provided" />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="genotype"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Genotype</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            disabled={!isEditing}
+                            className=" w-full"
+                          >
+                            <SelectValue placeholder="Select a gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {GENOTYPE.map((genotype, k) => (
+                            <SelectItem className="" value={genotype} key={k}>
+                              {genotype}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -418,8 +490,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Phone Number *</FormLabel>
                     <Input
-                      placeholder="Enter phone number"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -434,8 +506,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Alternate Phone Number *</FormLabel>
                     <Input
-                      placeholder="Enter phone number"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -450,8 +522,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Email Address *</FormLabel>
                     <Input
-                      placeholder="Enter email address"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -466,8 +538,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>State *</FormLabel>
                     <Input
-                      placeholder="Enter state"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -482,8 +554,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>L.G.A. *</FormLabel>
                     <Input
-                      placeholder="Enter L.G.A."
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -498,8 +570,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Country *</FormLabel>
                     <Input
-                      placeholder="Enter country"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -515,8 +587,8 @@ export default function PatientUpdateForm({
                 <FormItem className="space-y-2">
                   <FormLabel>Address *</FormLabel>
                   <Textarea
-                    placeholder="Enter address"
-                    required
+                    placeholder="No information provided"
+                    disabled={!isEditing}
                     {...field}
                     className="border-blue-200 focus:border-blue-400"
                   />
@@ -546,8 +618,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Emergency Name *</FormLabel>
                     <Input
-                      placeholder="Enter emergency name"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -562,8 +634,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Emergency Phone *</FormLabel>
                     <Input
-                      placeholder="Enter emergency phone"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -578,8 +650,8 @@ export default function PatientUpdateForm({
                   <FormItem className="space-y-2">
                     <FormLabel>Emergency Relationship *</FormLabel>
                     <Input
-                      placeholder="Enter emergency relationship"
-                      required
+                      placeholder="No information provided"
+                      disabled={!isEditing}
                       {...field}
                       className="border-blue-200 focus:border-blue-400"
                     />
@@ -592,21 +664,37 @@ export default function PatientUpdateForm({
         </Card>
 
         <div className="flex mt-[20px] justify-end space-x-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            className="border-blue-200 text-blue-600 hover:bg-blue-50"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {isLoading ? "Creating" : "Create Patient"}
-          </Button>
+          {isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditing(false)}
+              className="border-blue-200 text-blue-600 hover:bg-blue-50"
+            >
+              Cancel
+            </Button>
+          )}
+          {!isEditing && (
+            <Button
+              type="button"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setIsEditing(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Update Patient
+            </Button>
+          )}
+          {isEditing && (
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isLoading ? "Saving" : "Save Changes"}
+            </Button>
+          )}
         </div>
       </form>
     </Form>

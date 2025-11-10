@@ -2,8 +2,9 @@
 
 import { auth } from "@/auth";
 import { CreatePatientValues } from "@/components/patients/patient-registration-form";
+import { UpdatePatientValues } from "@/components/patients/patient-update-form";
 import { API, URLS } from "@/lib/const";
-import { FetchUserProps, PatientProps } from "@/lib/types";
+import { AppointmentProps, FetchUserProps, PatientProps } from "@/lib/types";
 
 export const getAllPatients = async ({
   fields,
@@ -140,6 +141,67 @@ export const createPatientPost = async (value: CreatePatientValues) => {
     } else return null;
   } catch (e: any) {
     console.log("Unable to create patient ", e);
+  }
+};
+
+export const updatePatientPatch = async (
+  value: UpdatePatientValues,
+  id: string
+) => {
+  const session = await auth();
+  const BEARER_TOKEN = session?.user?.accessToken;
+  const url = `${API}${URLS.patients.update.replace("{id}", id)}`;
+
+  try {
+    const payload = {
+      address: value.address,
+      age: value.age,
+      alternatePhone: value.alternatePhone,
+      bloodGroup: value.bloodGroup,
+      country: value.country,
+      dateOfBirth: value.dateOfBirth,
+      email: value.email,
+      emergencyName: value.emergencyName,
+      emergencyPhone: value.emergencyPhone,
+      emergencyRelation: value.emergencyRelation,
+      firstName: value.firstName,
+      gender: value.gender,
+      genotype: value.genotype,
+      lastName: value.lastName,
+      lga: value.lga,
+      maritalStatus: value.maritalStatus,
+      occupation: value.occupation,
+      phone: value.phone,
+      religion: value.religion,
+      state: value.state,
+      middleName: value.middleName,
+    };
+
+    const fixedPayload = Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, v === "" ? null : v])
+    );
+
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${BEARER_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fixedPayload),
+    });
+
+    const data = await res.json();
+
+    // console.log({ res });
+    // console.log({ fixedPayload });
+
+    // console.log("Data", data);
+
+    if (res.ok) {
+      return data.data;
+    } else return null;
+  } catch (e: any) {
+    console.log("Unable to update patient ", e);
   }
 };
 
@@ -299,5 +361,58 @@ export const getAllArchivedPatients = async ({
     return null;
   } catch (e: any) {
     console.log("Error fetching patients", e);
+  }
+};
+
+export const getAppointmentsForPatient = async (
+  id: string,
+  { fields, limit, page, query }: FetchUserProps
+) => {
+  const url = new URL(
+    `${API}${URLS.patients.appointmentHistory.replace("{id}", id)}`
+  );
+  const session = await auth();
+  const BEARER_TOKEN = session?.user?.accessToken;
+
+  const stringFields = fields?.join(",");
+
+  url.searchParams.set("page", page?.toString() ?? "");
+  url.searchParams.set("limit", limit?.toString() ?? "");
+  query &&
+    url.searchParams.set("q", Array.isArray(query) ? query.join(",") : query);
+  url.searchParams.set("fields", stringFields ?? "");
+
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${BEARER_TOKEN}`,
+      },
+    });
+
+    const data = await res.json();
+    // console.log(data.data.data);
+    const success = data.success;
+    const meta = data.data.meta;
+    const records: AppointmentProps[] = data.data.data;
+
+    const totalPage = meta.pages;
+    const currentPage = meta.page;
+    const totalRecord = meta.total;
+    const setLimit = meta.limit;
+
+    if (res.ok) {
+      return {
+        records: records,
+        totalPage: totalPage,
+        currentPage: currentPage,
+        totalRecord: totalRecord,
+        setLimit: setLimit,
+      };
+    }
+    return null;
+  } catch (e: any) {
+    console.log("Unable to fetch appointment history", e);
   }
 };
