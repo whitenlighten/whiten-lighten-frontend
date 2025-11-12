@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Celebrity Dentist",
+  title: "Whiten Lighten | Celebrity Dentist",
   description:
     "We’re affordable but we’re not inexpensive with quality service because we run a dental luxury lounge.",
 };
@@ -32,8 +32,7 @@ export default function RootLayout({
       <SessionProvider>
         <AuthGuard>
           <body
-            className={`${geistSans.className} ${geistMono.variable} scroll-smooth antialiased`}
-          >
+            className={`${geistSans.className} ${geistMono.variable} scroll-smooth antialiased`}>
             <NextTopLoader
               color="#155dfc"
               initialPosition={0.08}
