@@ -63,8 +63,7 @@ export const user_columns: ColumnDef<UserProps>[] = [
           <div
             className={` font-bold py-[7px] text-[12px]  text-center cursor-default rounded-full ${getRoleBadgeColor(
               row.original.role as Role
-            )}`}
-          >
+            )}`}>
             {row.original.role}
           </div>
         </>
@@ -80,8 +79,7 @@ export const user_columns: ColumnDef<UserProps>[] = [
           <div
             className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getActiveBadgeColor(
               row.original.isActive
-            )}`}
-          >
+            )}`}>
             {row.original.isActive ? "ACTIVE" : "INACTIVE"}
           </div>
         </>
@@ -110,16 +108,14 @@ export const user_columns: ColumnDef<UserProps>[] = [
           <DropdownMenuContent className=" flex flex-col gap-3 py-[10px] px-[20px]">
             <Link
               href={`/users/${row.original.id}`}
-              className=" flex gap-3 items-center"
-            >
+              className=" flex gap-3 items-center">
               <Eye className=" w-4 h-4" />
               <p>View user</p>
             </Link>
             {row.original.isActive && (
               <Link
                 href={`/users/${row.original.id}/edit`}
-                className=" flex gap-3 items-center"
-              >
+                className=" flex gap-3 items-center">
                 <SquarePen className=" w-4 h-4" />
                 <p>Edit user</p>
               </Link>
@@ -184,8 +180,7 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
           <div
             className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getPatientStatusColor(
               row.original.status
-            )}`}
-          >
+            )}`}>
             {row.original.status}
           </div>
         </>
@@ -193,17 +188,20 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
     },
   },
   {
-    accessorKey: "registrationType",
+    accessorKey: "registeredBy",
     header: () => <div className=" text-center">Registered By</div>,
     cell: ({ row }) => {
+      const registeredBy = row.original.registeredBy;
+      if (!registeredBy)
+        return <div className="text-center text-gray-400">-</div>;
+
       return (
         <>
           <div
             className={` font-bold py-[7px] text-[12px]  text-center cursor-default rounded-full ${getRoleBadgeColor(
-              row.original.registrationType as Role
-            )}`}
-          >
-            {row.original.registrationType}
+              registeredBy.role as Role
+            )}`}>
+            {registeredBy.role}
           </div>
         </>
       );
@@ -221,8 +219,7 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
           <DropdownMenuContent className=" flex flex-col gap-3 py-[10px] px-[20px]">
             <Link
               href={`/patients/${row.original.patientId}`}
-              className=" flex gap-3 items-center"
-            >
+              className=" flex gap-3 items-center">
               <Eye className=" w-4 h-4" />
               <p>View patient</p>
             </Link>
@@ -309,8 +306,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
           <div
             className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getAppointmentStatusColor(
               row.original.status as AppointmentStatus
-            )}`}
-          >
+            )}`}>
             {row.original.status}
           </div>
         </>
@@ -349,8 +345,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
                     <div
                       className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getAppointmentStatusColor(
                         row.original.status as AppointmentStatus
-                      )}`}
-                    >
+                      )}`}>
                       {row.original.status}
                     </div>
                   </div>
@@ -372,11 +367,11 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
                       <span>
                         <p className=" font-medium">Time:</p>
 
-                        {/* {row.original.time} */}
+                        {row.original.timeslot}
                       </span>
                       <span>
                         <p className=" font-medium">Date:</p>
-                        {/* {format(row.original.date ?? new Date(), "PPPP")} */}
+                        {format(row.original.date ?? new Date(), "PPPP")}
                       </span>
                     </div>
                   </div>
@@ -401,7 +396,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
                     </Link>
                   </Button>
 
-                  <DialogFooter className=" grid md:grid-cols-4 grid-cols-1">
+                  {/* <DialogFooter className=" grid md:grid-cols-4 grid-cols-1">
                     {row.original.status === "COMPLETED" ? null : row.original
                         .status === "CONFIRMED" ? (
                       <>
@@ -415,7 +410,7 @@ export const appointment_columns: ColumnDef<AppointmentProps>[] = [
                     <DialogClose asChild>
                       <Button variant="outline">Close</Button>
                     </DialogClose>
-                  </DialogFooter>
+                  </DialogFooter> */}
                 </div>
 
                 <ScrollBar orientation="vertical" />
@@ -464,8 +459,7 @@ export const mini_appointment_columns: ColumnDef<AppointmentProps>[] = [
           <div
             className={` font-bold cursor-default  py-[7px] px-[15px] text-[12px] text-center rounded-full ${getAppointmentStatusColor(
               row.original.status as AppointmentStatus
-            )}`}
-          >
+            )}`}>
             {row.original.status}
           </div>
         </>

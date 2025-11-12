@@ -99,6 +99,7 @@ export const updateUser = z.object({
       message: "Please enter phone number.",
     })
     .regex(/^0[789][01]\d{8}$/, "This is not a valid phone number"),
+  password: passwordSchema,
 });
 
 export const createPatient = z.object({
@@ -133,6 +134,7 @@ export const createPatient = z.object({
 
   registrationType: z.string().optional(),
   registeredById: z.string().optional(),
+  registeredBy: z.string().optional(),
 });
 
 export const updatePatient = z.object({

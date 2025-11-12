@@ -1,4 +1,5 @@
 import { getAllUsers } from "@/actions/users";
+import { auth } from "@/auth";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
 import Filter from "@/components/shared/filter";
@@ -8,19 +9,22 @@ import { user_columns } from "@/lib/columns";
 import { FIELDS, Roles } from "@/lib/const";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function UsersPage(props: { searchParams: SearchParams }) {
+  const session = await auth();
+  const user = session?.user;
+
+  if (!user || user.role !== "SUPERADMIN") {
+    redirect("/dashboard");
+  }
   const searchParams = await props.searchParams;
   const page = searchParams.page ?? 1;
   const limit = searchParams.limit ?? 20;
   const query = searchParams.q;
   const role = searchParams.role;
-
-  // if (!user || !["ADMIN", "SUPERADMIN"].includes(user.role)) {
-  //   redirect("/dashboard");
-  // }
 
   const users = await getAllUsers({
     fields: FIELDS,
@@ -30,9 +34,10 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
     role: role,
   });
 
-  // console.log({ users });
-
-  // console.log(users?.records);
+  const filteredRecords =
+    users?.records?.filter(
+      (u) => u.role !== "SUPERADMIN" && u.id !== user.id
+    ) ?? [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +45,7 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
         <div className="flex justify-between flex-wrap gap-2 items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Users ({users?.totalRecord ?? 0})
+              Users ({filteredRecords.length})
             </h1>
             <p className="text-gray-600">Manage system users and their roles</p>
           </div>
@@ -69,7 +74,7 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
             showColumnButton={false}
             showSearch={false}
             columns={user_columns}
-            data={users?.records ?? []}
+            data={filteredRecords}
           />
           <br />
           {users?.totalRecord >= 20 && (

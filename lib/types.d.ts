@@ -48,6 +48,7 @@ interface UserProps {
   lastName: string;
   phone: string;
   role: string;
+  password: string;
   specialization?: string;
   isActive: boolean;
   emailVerified?: boolean;
@@ -60,13 +61,21 @@ interface UserProps {
 interface FetchUserProps {
   page?: number;
   limit?: number;
+  doctorId?: string;
+  patientId?: string;
   role?: string | string[] | undefined;
   query?: string | string[] | undefined;
   fields?: string[];
 }
 
 type GenotypeProps = "AA" | "AS" | "SS" | "AC" | "SC";
-
+interface RegisteredByUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: Role;
+}
 interface PatientProps {
   id: string;
   patientId: string;
@@ -100,6 +109,7 @@ interface PatientProps {
   familyHistory: string | null;
   registrationType: Role;
   registeredById: string | null;
+  registeredBy: RegisteredByUser | null;
   insuranceProvider: string | null;
   insuranceNumber: string | null;
   paymentMethod: string | null;
@@ -142,6 +152,9 @@ interface DummyAppointmentProps {
 }
 
 interface FetchAppointmentProps
-  extends Pick<FetchUserProps, "limit" | "page" | "query"> {
+  extends Pick<
+    FetchUserProps,
+    "limit" | "page" | "query" | "doctorId" | "patientId"
+  > {
   status?: string | string[] | undefined;
 }

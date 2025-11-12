@@ -1,4 +1,5 @@
 import { getAllPatients } from "@/actions/patients";
+import { getCurrentUser } from "@/actions/auth";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
 import SearchBar from "@/components/shared/search-bar";
@@ -7,8 +8,10 @@ import { patient_columns } from "@/lib/columns";
 import { PATIENTFIELDS } from "@/lib/const";
 import { ArchiveRestore, Plus } from "lucide-react";
 import Link from "next/link";
+import { Role } from "@prisma/client";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
 export default async function PatientsPage(props: {
   searchParams: SearchParams;
 }) {
@@ -17,11 +20,18 @@ export default async function PatientsPage(props: {
   const limit = searchParams.limit ?? 20;
   const query = searchParams.q;
 
+  const user = await getCurrentUser();
+
+  // ✅ Determine query parameters based on user role
+  const isDoctor = user?.role === Role.DOCTOR;
+  const isPatient = user?.role === Role.PATIENT;
+
   const patients = await getAllPatients({
     fields: PATIENTFIELDS,
     limit: Number(limit),
     page: Number(page),
-    query: query,
+    query,
+    ...(isDoctor ? { doctorId: user.id } : {}), // ✅ Only pass doctorId for doctors
   });
 
   return (
@@ -36,24 +46,28 @@ export default async function PatientsPage(props: {
               Manage patient records and information
             </p>
           </div>
-          <div className=" flex gap-2">
-            <Link href="/patients/archived">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <ArchiveRestore className="w-4 h-4 mr-2" />
-                View Archived
-              </Button>
-            </Link>
-            <Link href="/patients/new">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Patient
-              </Button>
-            </Link>
-          </div>
+
+          {/* ✅ Hide Add / Archived buttons for Doctors and Patients */}
+          {!isDoctor && !isPatient && (
+            <div className="flex gap-2">
+              <Link href="/patients/archived">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <ArchiveRestore className="w-4 h-4 mr-2" />
+                  View Archived
+                </Button>
+              </Link>
+              <Link href="/patients/new">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Patient
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
 
-        <div className=" w-full">
-          <div className=" flex flex-row gap-4">
+        <div className="w-full">
+          <div className="flex flex-row gap-4">
             <SearchBar
               query={query}
               placeholder="Search with first name, last name or email address"
@@ -66,6 +80,7 @@ export default async function PatientsPage(props: {
             columns={patient_columns}
             data={patients?.records ?? []}
           />
+
           <br />
           {patients?.totalRecord >= 20 && (
             <PaginationComponent

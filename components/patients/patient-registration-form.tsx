@@ -66,6 +66,7 @@ export default function PatientRegistrationForm() {
       bloodGroup: "A_POS",
       registeredById: session.data?.user?.id,
       registrationType: session.data?.user?.role,
+      registeredBy: session.data?.user?.role,
     },
   });
 
@@ -86,7 +87,7 @@ export default function PatientRegistrationForm() {
       router.push(`/patients`);
       setIsLoading(false);
     } else {
-      toast.error("Patient was not created");
+      toast.error(res.error || "Patient was not created");
       router.refresh();
       form.reset();
       setIsLoading(false);
@@ -355,70 +356,6 @@ export default function PatientRegistrationForm() {
             />
           </CardContent>
         </Card>
-        {/* 
-        <Card className="border-blue-100 mt-[30px]">
-          <CardHeader>
-            <CardTitle className="text-lg text-blue-900 flex items-center">
-              <Mail className="w-5 h-5 mr-2" />
-              Emergency Contact Information
-            </CardTitle>
-            <CardDescription>
-              Basic emergency contact information
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="emergencyName"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Emergency Name *</FormLabel>
-                    <Input
-                      placeholder="Enter emergency name"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="emergencyPhone"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Emergency Phone *</FormLabel>
-                    <Input
-                      placeholder="Enter emergency phone"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="emergencyRelation"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>Emergency Relationship *</FormLabel>
-                    <Input
-                      placeholder="Enter emergency relationship"
-                      required
-                      {...field}
-                      className="border-blue-200 focus:border-blue-400"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </CardContent>
-        </Card> */}
 
         <div className="flex mt-[20px] justify-end space-x-4">
           <Button
