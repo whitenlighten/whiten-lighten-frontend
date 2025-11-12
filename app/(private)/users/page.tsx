@@ -17,7 +17,7 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
   const session = await auth();
   const user = session?.user;
 
-  if (!user || user.role !== "SUPERADMIN") {
+  if (!user || !["SUPERADMIN", "ADMIN"].includes(user.role)) {
     redirect("/dashboard");
   }
   const searchParams = await props.searchParams;
@@ -49,12 +49,14 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
             </h1>
             <p className="text-gray-600">Manage system users and their roles</p>
           </div>
-          <Link href="/users/new">
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Add User
-            </Button>
-          </Link>
+          {user.role === "SUPERADMIN" && (
+            <Link href="/users/new">
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Add User
+              </Button>
+            </Link>
+          )}
         </div>
 
         <div className=" w-full">

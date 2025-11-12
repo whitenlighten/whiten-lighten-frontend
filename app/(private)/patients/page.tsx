@@ -22,7 +22,6 @@ export default async function PatientsPage(props: {
 
   const user = await getCurrentUser();
 
-  // ✅ Determine query parameters based on user role
   const isDoctor = user?.role === Role.DOCTOR;
   const isPatient = user?.role === Role.PATIENT;
 
@@ -31,7 +30,7 @@ export default async function PatientsPage(props: {
     limit: Number(limit),
     page: Number(page),
     query,
-    ...(isDoctor ? { doctorId: user.id } : {}), // ✅ Only pass doctorId for doctors
+    ...(isDoctor ? { doctorId: user.id } : {}),
   });
 
   return (

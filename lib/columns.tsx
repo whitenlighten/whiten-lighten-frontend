@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { AppointmentStatus, Role } from "@prisma/client";
+import { AppointmentStatus, RegistrationType, Role } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { EllipsisVertical, Eye, SquarePen } from "lucide-react";
@@ -202,6 +202,26 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
               registeredBy.role as Role
             )}`}>
             {registeredBy.role}
+          </div>
+        </>
+      );
+    },
+  },
+  {
+    accessorKey: "registrationType",
+    header: () => <div className=" text-center">Registeration Method</div>,
+    cell: ({ row }) => {
+      const registeredMethod = row.original.registrationType;
+      if (!registeredMethod)
+        return <div className="text-center text-gray-400">-</div>;
+
+      return (
+        <>
+          <div
+            className={` font-bold py-[7px] text-[12px]  text-center cursor-default rounded-full ${getRoleBadgeColor(
+              registeredMethod
+            )}`}>
+            {registeredMethod}
           </div>
         </>
       );
