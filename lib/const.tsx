@@ -42,6 +42,9 @@ export const URLS = {
     allArchived: "/patients/archived/all",
     appointmentHistory: "/patients/{id}/appointments",
   },
+  audit: {
+    all: "/audit-trail",
+  },
 };
 
 export const FIELDS = [
@@ -73,7 +76,6 @@ export const Roles: Role[] = [
   "FRONTDESK",
   "NURSE",
   "PATIENT",
-  "PHARMACIST",
   "SUPERADMIN",
 ];
 

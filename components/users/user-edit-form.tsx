@@ -44,6 +44,7 @@ export function UserEditForm({ id }: { id: string }) {
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
       phone: user?.phone ?? "",
+      password: user?.password ?? "",
     },
     resolver: zodResolver(updateUser),
     mode: "all",
@@ -55,6 +56,7 @@ export function UserEditForm({ id }: { id: string }) {
         firstName: user.firstName ?? "",
         lastName: user.lastName ?? "",
         phone: user.phone ?? "",
+        password: user.password ?? "",
       });
     }
   }, [form, user]);
@@ -200,8 +202,7 @@ export function UserEditForm({ id }: { id: string }) {
                   <Input
                     placeholder="Enter secure password"
                     type={showPassword ? "text" : "password"}
-                    defaultValue={"********"}
-                    disabled
+                    defaultValue={user?.password}
                     required
                     className="pl-10 pr-12 border-blue-200 focus:border-blue-400"
                   />
@@ -210,8 +211,7 @@ export function UserEditForm({ id }: { id: string }) {
                     variant="ghost"
                     size="sm"
                     className="absolute right-2 top-1 h-8 w-8 p-0"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
+                    onClick={() => setShowPassword(!showPassword)}>
                     <EyeOff />
                   </Button>
                 </div>
@@ -232,8 +232,7 @@ export function UserEditForm({ id }: { id: string }) {
               type="button"
               variant="outline"
               onClick={() => setIsDisabled(true)}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
+              className="border-blue-200 text-blue-600 hover:bg-blue-50">
               Cancel
             </Button>
           ) : (
@@ -241,8 +240,7 @@ export function UserEditForm({ id }: { id: string }) {
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
+              className="border-blue-200 text-blue-600 hover:bg-blue-50">
               Cancel
             </Button>
           )}
@@ -254,16 +252,14 @@ export function UserEditForm({ id }: { id: string }) {
                 e.stopPropagation();
                 setIsDisabled(false);
               }}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+              className="bg-blue-600 hover:bg-blue-700">
               Edit User
             </Button>
           ) : (
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+              className="bg-blue-600 hover:bg-blue-700">
               {isLoading ? "Saving Changes" : "Save Changes"}
             </Button>
           )}

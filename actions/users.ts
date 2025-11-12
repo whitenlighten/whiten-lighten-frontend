@@ -169,6 +169,8 @@ export const createUserPost = async (data: CreateUserValues) => {
     role: data.role,
   };
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -177,18 +179,24 @@ export const createUserPost = async (data: CreateUserValues) => {
         Authorization: `Bearer ${BEARER_TOKEN}`,
         "Content-Type": "application/json",
       },
+      signal: controller.signal,
     });
-    const data = await res.json();
-    console.log({ data });
-    const staff: UserProps = data.data;
-    console.log({ staff });
-    if (data.data === null) {
+
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      console.error("Server error:", res.status);
       return null;
-    } else {
-      return staff;
     }
+    const data = await res.json();
+    return data?.data ?? null;
   } catch (e: any) {
-    console.log("Unable to create staff", e);
+    if (e.name === "AbortError") {
+      console.warn("Request timed out after 10s");
+    } else {
+      console.error("Unable to create staff", e);
+    }
+    return null;
   }
 };
 

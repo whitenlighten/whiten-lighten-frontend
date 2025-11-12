@@ -11,6 +11,7 @@ export const getAllPatients = async ({
   limit,
   page,
   query,
+  doctorId,
 }: FetchUserProps) => {
   const stringFields = fields?.join(",");
   const url = new URL(`${API}${URLS.patients.all}`);
@@ -19,6 +20,8 @@ export const getAllPatients = async ({
   query &&
     url.searchParams.set("q", Array.isArray(query) ? query.join(",") : query);
   url.searchParams.set("fields", stringFields ?? "");
+
+  if (doctorId) url.searchParams.set("doctorId", doctorId);
 
   const session = await auth();
   const BEARER_TOKEN = session?.user?.accessToken;
@@ -96,28 +99,18 @@ export const createPatientPost = async (value: CreatePatientValues) => {
 
   try {
     const payload = {
-      address: value.address,
-      age: value.age,
-      alternatePhone: value.alternatePhone,
-      bloodGroup: value.bloodGroup,
-      country: value.country,
-      dateOfBirth: value.dateOfBirth,
-      email: value.email,
-      emergencyName: value.emergencyName,
-      emergencyPhone: value.emergencyPhone,
-      emergencyRelation: value.emergencyRelation,
       firstName: value.firstName,
-      gender: value.gender,
-      genotype: value.genotype,
       lastName: value.lastName,
-      lga: value.lga,
-      maritalStatus: value.maritalStatus,
-      occupation: value.occupation,
+      email: value.email,
       phone: value.phone,
-      religion: value.religion,
-      state: value.state,
-      middleName: value.middleName,
+      dateOfBirth: value.dob,
+      age: value.age,
+      gender: value.gender,
+      address: value.address,
+      maritalStatus: value.maritalStatus,
+      bloodGroup: value.bloodGroup,
       registeredById: value.registeredById,
+      registeredBy: value.registeredBy,
       registrationType: value.registrationType,
     };
 
