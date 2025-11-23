@@ -15,6 +15,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { AppointmentActions } from "@/components/appointments/appointment-actions";
+import { getAllUsers } from "@/actions/users";
 
 type AppointmentDetailsPageProps = {
   params: Promise<{ id: string }>;
@@ -39,6 +40,19 @@ export default async function AppointmentDetailsPage({
     timeslot,
     maritalStatus,
   } = appointment;
+
+  const doctorsResponse = await getAllUsers({
+    page: 1,
+    limit: 100,
+    role: "DOCTOR",
+    fields: ["id", "firstName", "lastName", "role"],
+  });
+
+  const doctors =
+    doctorsResponse?.records?.map((d) => ({
+      id: d.id,
+      name: `${d.firstName} ${d.lastName}`,
+    })) ?? [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -190,6 +204,8 @@ export default async function AppointmentDetailsPage({
           appointmentId={appointment.id}
           status={appointment.status}
           role={user?.role}
+          doctors={doctors}
+          assignedDoctorId={appointment.doctor?.id}
         />
       </main>
     </div>
