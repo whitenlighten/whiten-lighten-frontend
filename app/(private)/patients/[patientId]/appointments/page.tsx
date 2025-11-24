@@ -1,18 +1,20 @@
 import { getAllAppointments } from "@/actions/appointment";
-import { getCurrentUser } from "@/actions/auth"; // ✅ import
+import { getAppointmentsForPatient, getPatientsByID } from "@/actions/patients";
 import { DataTable } from "@/components/shared/custom-datatable";
 import { PaginationComponent } from "@/components/shared/custom-pagination";
 import Filter from "@/components/shared/filter";
 import SearchBar from "@/components/shared/search-bar";
 import { Button } from "@/components/ui/button";
-import { appointment_columns } from "@/lib/columns";
+import { appointment_columns, mini_appointment_columns } from "@/lib/columns";
 import { Status } from "@/lib/const";
+// import { appointment_columns } from "@/lib/columns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-
-export default async function Appointments(props: {
+type Params = Promise<{ patientId: string }>;
+export default async function Appointment(props: {
+  params: Params;
   searchParams: SearchParams;
 }) {
   const searchParams = await props.searchParams;
@@ -21,30 +23,16 @@ export default async function Appointments(props: {
   const query = searchParams.q;
   const status = searchParams.status;
 
-  const user = await getCurrentUser();
+  const { patientId } = await props.params;
 
-  let appointments;
+  const patient = await getPatientsByID(patientId);
 
-  if (user?.role?.toUpperCase() === "DOCTOR") {
-    appointments = await getAllAppointments({
-      limit: Number(limit),
-      page: Number(page),
-      doctorId: user.id,
-      query,
-      status,
-    });
-  } else {
-    appointments = await getAllAppointments({
-      limit: Number(limit),
-      page: Number(page),
-      query: query,
-      status: status,
-    });
-  }
-
-  const canBook =
-    user &&
-    !["NURSE", "PATIENT", "DOCTOR"].includes(user.role?.toUpperCase() ?? "");
+  // const appointments = DUMMY_APPOINTMENT;
+  const appointments = await getAppointmentsForPatient(patient?.id ?? "", {
+    limit: Number(limit),
+    page: Number(page),
+    query: query,
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,31 +40,20 @@ export default async function Appointments(props: {
         <div className="flex justify-between gap-2 flex-wrap items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Appointment ({appointments?.totalRecord ?? 0})
+              Appointment History ({appointments?.totalRecord ?? 0})
             </h1>
             <p className="text-gray-600">
-              Manage appointment records and information
+              Manage apointment records and information
             </p>
           </div>
-
-          {/* ✅ Conditionally render Book button */}
-          {canBook && (
-            <div className="flex gap-2">
-              <Link href="/appointments/new">
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Book appointment
-                </Button>
-              </Link>
-            </div>
-          )}
         </div>
 
-        <div>
-          <div className="flex flex-row gap-4">
+        <div className="">
+          {/* <AppointmentCard /> */}
+          <div className=" flex flex-row gap-4">
             <SearchBar
               query={query}
-              placeholder="Search with reason or service"
+              placeholder="Search with first name, last name or email address"
             />
             <Filter
               searchTerm="status"
@@ -88,10 +65,9 @@ export default async function Appointments(props: {
           <DataTable
             showColumnButton={false}
             showSearch={false}
-            columns={appointment_columns}
-            data={appointments?.appointments ?? []}
+            columns={mini_appointment_columns}
+            data={appointments?.records ?? []}
           />
-
           <br />
           {appointments?.totalRecord >= 20 && (
             <PaginationComponent

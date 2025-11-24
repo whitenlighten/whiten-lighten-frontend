@@ -26,16 +26,25 @@ export const URLS = {
     me: "/appointments/me",
     all: "/appointments",
     one: "/appointments/{id}",
+    update: "/appointments/{id}",
     approve: "/appointments/{id}/approve",
     cancel: "/appointments/{id}/cancel",
     complete: "/appointments/{id}/complete",
   },
   patients: {
     create: "/patients",
+    update: "/patients/{id}",
     all: "/patients",
     oneById: "/patients/{id}",
     oneByPatientId: "/patients/one/{patientId}",
     approve: "/patients/{patientId}/approve",
+    archive: "/patients/{id}",
+    unarchive: "/patients/{id}/unarchive",
+    allArchived: "/patients/archived/all",
+    appointmentHistory: "/patients/{id}/appointments",
+  },
+  audit: {
+    all: "/audit-trail",
   },
 };
 
@@ -69,6 +78,15 @@ export const Roles: Role[] = [
   "NURSE",
   "PATIENT",
   "SUPERADMIN",
+];
+
+export const Status = [
+  "PENDING",
+  "CONFIRMED",
+  "COMPLETED",
+  "CANCELLED",
+  "NO_SHOW",
+  "RESCHEDULED",
 ];
 
 export const MEDICAL_CONDITIONS = [

@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AppointmentForm } from "@/components/appointments/appointment-form";
 import { getCurrentUser } from "@/actions/auth";
+import { getAllPatients } from "@/actions/patients";
+import { getAllUsers } from "@/actions/users";
 
 export default async function NewAppointmentPage() {
   const user = await getCurrentUser();
@@ -9,6 +10,34 @@ export default async function NewAppointmentPage() {
   if (!user) {
     redirect("/");
   }
+
+  const patientsResponse = await getAllPatients({
+    page: 1,
+    limit: 100,
+    fields: ["id", "firstName", "lastName", "email", "phone"],
+  });
+
+  const patients =
+    patientsResponse?.records?.map((p) => ({
+      id: p.id,
+      name: `${p.firstName} ${p.lastName}`,
+    })) ?? [];
+
+  const doctorsResponse = await getAllUsers({
+    page: 1,
+    limit: 100,
+    role: "DOCTOR",
+    fields: ["id", "firstName", "lastName", "role"],
+  });
+
+  const doctors =
+    doctorsResponse?.records
+      ?.filter((u) => u.role?.toUpperCase() === "DOCTOR")
+      .map((u) => ({
+        id: u.id,
+        name: `${u.firstName} ${u.lastName}`,
+        specialization: u.role,
+      })) ?? [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -20,7 +49,8 @@ export default async function NewAppointmentPage() {
           <p className="text-gray-600">Book a new appointment for a patient</p>
         </div>
 
-        <AppointmentForm />
+        {/* ✅ Pass fetched lists as props */}
+        <AppointmentForm patients={patients} doctors={doctors} />
       </main>
     </div>
   );

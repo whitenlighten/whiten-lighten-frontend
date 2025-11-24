@@ -43,8 +43,8 @@ export function UserCreationForm() {
     defaultValues: {
       email: "",
       firstName: "",
-      password: "",
       lastName: "",
+      password: "",
       phone: "",
       role: "",
     },
@@ -58,7 +58,9 @@ export function UserCreationForm() {
   async function handleSubmit(data: CreateUserValues) {
     setIsLoading(true);
 
+    console.time("createUserPost");
     const response = await createUserPost(data);
+    console.timeEnd("createUserPost");
     console.log({ response });
     if (response === null) {
       toast.error("Staff Was Not Created Successfully");
@@ -71,7 +73,6 @@ export function UserCreationForm() {
       form.reset();
     }
   }
-
   const selectedRoleData = USER_ROLES.find(
     (role) => role.value === selectedRole
   );
@@ -205,8 +206,7 @@ export function UserCreationForm() {
                       variant="ghost"
                       size="sm"
                       className="absolute right-2 top-1 h-8 w-8 p-0"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
+                      onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <Eye /> : <EyeOff />}
                     </Button>
                   </div>
@@ -246,8 +246,7 @@ export function UserCreationForm() {
                     form.setValue("role", role.value, {
                       shouldValidate: true,
                     })
-                  }
-                >
+                  }>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-medium text-gray-900">{role.label}</h3>
                     <Badge className={role.color}>{role.value}</Badge>
@@ -306,8 +305,7 @@ export function UserCreationForm() {
                     {selectedRoleData.permissions.map((permission, index) => (
                       <div
                         key={index}
-                        className="flex items-center text-sm text-blue-700"
-                      >
+                        className="flex items-center text-sm text-blue-700">
                         <UserCheck className="w-3 h-3 mr-2 text-blue-500" />
                         {permission}
                       </div>
@@ -325,15 +323,13 @@ export function UserCreationForm() {
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            className="border-blue-200 text-blue-600 hover:bg-blue-50"
-          >
+            className="border-blue-200 text-blue-600 hover:bg-blue-50">
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isLoading || !selectedRole}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
+            className="bg-blue-600 hover:bg-blue-700">
             {isLoading ? "Creating" : "Create User"}
           </Button>
         </div>
