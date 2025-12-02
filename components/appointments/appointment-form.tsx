@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createAppointment } from "@/actions/appointment";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { toast } from "sonner";
-import { APPOINTMENT_TIMES } from "@/lib/schema"; // ✅ import your constant
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function AppointmentForm({
   patients,
@@ -29,6 +32,7 @@ export function AppointmentForm({
   });
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [date, setDate] = React.useState<Date>();
 
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -114,31 +118,48 @@ export function AppointmentForm({
         <CardHeader>
           <CardTitle>Date & Time</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-8">
           <div className="space-y-2">
             <Label>Date</Label>
-            <Input
-              type="date"
-              required
-              value={form.date}
-              onChange={(e) => handleChange("date", e.target.value)}
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  value={form.date}
+                  type="button"
+                  data-empty={form.date}
+                  className="data-[empty=true]:text-muted-foreground w-full  justify-start text-left font-normal">
+                  <CalendarIcon />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  required
+                  selected={date}
+                  onSelect={(d) => {
+                    setDate(d);
+                    handleChange("date", d?.toISOString().split("T")[0] || "");
+                  }}
+                  disabled={(day) =>
+                    day < new Date(new Date().setHours(0, 0, 0, 0))
+                  }
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">
             <Label>Time Slot</Label>
-            <select
+            <Input
               required
+              type="time"
               value={form.timeSlot}
               onChange={(e) => handleChange("timeSlot", e.target.value)}
-              className="w-full border rounded-md px-3 py-2">
-              <option value="">Select time...</option>
-              {APPOINTMENT_TIMES.map((slot) => (
-                <option key={slot} value={slot}>
-                  {slot}
-                </option>
-              ))}
-            </select>
+              className="w-full border rounded-md px-3 py-2"
+              defaultValue="00:00:00"
+            />
           </div>
         </CardContent>
       </Card>

@@ -78,6 +78,8 @@ export default async function PatientsPage(props: {
             showSearch={false}
             columns={patient_columns}
             data={patients?.records ?? []}
+            rowLinkKey="patientId"
+            rowLinkPrefix="/patients/"
           />
 
           <br />

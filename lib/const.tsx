@@ -26,6 +26,7 @@ export const URLS = {
     me: "/appointments/me",
     all: "/appointments",
     one: "/appointments/{id}",
+    update: "/appointments/{id}",
     approve: "/appointments/{id}/approve",
     cancel: "/appointments/{id}/cancel",
     complete: "/appointments/{id}/complete",
@@ -56,6 +57,7 @@ export const FIELDS = [
   "role",
   "isActive",
   "lastLogin",
+  "staffCode",
 ];
 
 export const PATIENTFIELDS = [

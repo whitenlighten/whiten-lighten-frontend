@@ -30,13 +30,31 @@ export const getRecentActivities = async ({
     if (res.ok && data.success) {
       const activities = data.data.data.map((item: any) => ({
         id: item.id,
-        type: item.module || "system",
-        description: item.actionDescription || item.description,
+
+        // 🔥 Map entityType from backend → type expected by UI
+        type:
+          item.entityType?.toLowerCase() === "appointment"
+            ? "appointment"
+            : item.entityType?.toLowerCase() === "patient"
+            ? "patient"
+            : item.entityType?.toLowerCase() === "user"
+            ? "user"
+            : "system",
+
+        // 🔥 Fallback to human-readable actionDescription
+        description: item.actionDescription || "Activity recorded",
+
         timestamp: new Date(item.createdAt),
+
+        // 🔥 Map user relation if present
         user: item.user?.firstName
           ? `${item.user.firstName} ${item.user.lastName}`
-          : item.user?.email || "System",
-        status: item.status || undefined,
+          : item.actorRole
+          ? item.actorRole
+          : "System",
+
+        // Some audit actions may have status
+        status: item.details?.status || undefined,
       }));
 
       return {

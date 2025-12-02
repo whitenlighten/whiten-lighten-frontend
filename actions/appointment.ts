@@ -166,6 +166,42 @@ export const approveAppointement = async (id: string) => {
   }
 };
 
+export const updateAppointment = async (
+  id: string,
+  payload: { doctorId: string; reason?: string; date?: string; status?: string }
+) => {
+  const url = `${API}${URLS.appointment.update.replace("{id}", id)}`;
+  const session = await auth();
+  const BEARER_TOKEN = session?.user?.accessToken;
+
+  try {
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${BEARER_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...payload,
+        status: payload.status ?? "PENDING",
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return { success: true, data: data.data };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Failed to update appointment",
+      };
+    }
+  } catch (e) {
+    console.error("Error updating appointment:", e);
+    return { success: false, message: "Server error" };
+  }
+};
+
 export const completeAppointment = async (id: string) => {
   const url = `${API}${URLS.appointment.complete.replace("{id}", id)}`;
   const session = await auth();

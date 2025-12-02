@@ -93,21 +93,21 @@ export function QuickActions({ userRole }: QuickActionsProps) {
     }
 
     // ✅ Clinical notes (doctors + nurses + admins)
-    if (
-      userRole === Role.DOCTOR ||
-      userRole === Role.NURSE ||
-      userRole === Role.ADMIN ||
-      userRole === Role.SUPERADMIN
-    ) {
-      baseActions.push({
-        title: "Add Clinical Note",
-        description: "Document patient treatment",
-        href: "/clinical/new",
-        icon: FileText,
-        color: "bg-indigo-600 hover:bg-indigo-700",
-        available: true,
-      });
-    }
+    // if (
+    //   userRole === Role.DOCTOR ||
+    //   userRole === Role.NURSE ||
+    //   userRole === Role.ADMIN ||
+    //   userRole === Role.SUPERADMIN
+    // ) {
+    //   baseActions.push({
+    //     title: "Add Clinical Note",
+    //     description: "Document patient treatment",
+    //     href: "/clinical/new",
+    //     icon: FileText,
+    //     color: "bg-indigo-600 hover:bg-indigo-700",
+    //     available: true,
+    //   });
+    // }
 
     // ✅ Only admins & superadmins manage users
     if (userRole === Role.ADMIN || userRole === Role.SUPERADMIN) {

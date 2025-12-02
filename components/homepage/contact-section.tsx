@@ -75,7 +75,7 @@ export function ContactSection() {
         setLoading(false);
         form.reset();
         toast.error("Something went wrong", {
-          description: "There was a problem booking your eppointment",
+          description: "There was a problem booking your appointment",
         });
       } else {
         form.reset();
@@ -115,8 +115,7 @@ export function ContactSection() {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-4"
-                >
+                  className="space-y-4">
                   <div className=" grid grid-cols-1 md:grid-cols-2 gap-3">
                     <FormField
                       name="firstName"
@@ -195,8 +194,7 @@ export function ContactSection() {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={loading}
-                          >
+                            disabled={loading}>
                             <FormControl>
                               <SelectTrigger className=" w-full">
                                 <SelectValue placeholder="Select a service" />
@@ -224,8 +222,7 @@ export function ContactSection() {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={loading}
-                          >
+                            disabled={loading}>
                             <FormControl>
                               <SelectTrigger className=" w-full">
                                 <SelectValue placeholder="Select a service" />
@@ -272,8 +269,7 @@ export function ContactSection() {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
-                            disabled={loading}
-                          >
+                            disabled={loading}>
                             <FormControl>
                               <SelectTrigger className=" w-full">
                                 <SelectValue placeholder="Select a time" />
@@ -313,8 +309,7 @@ export function ContactSection() {
                     <Button
                       disabled={loading}
                       className=" cursor-pointer w-full"
-                      type="submit"
-                    >
+                      type="submit">
                       {loading ? (
                         <div className=" items-center gap-3 flex">
                           <LiaSpinnerSolid className=" animate-spin" />
@@ -345,8 +340,7 @@ export function ContactSection() {
                     <Link
                       target="__blank"
                       href={"https://maps.app.goo.gl/2t42wni9qnKirtQJ6"}
-                      className="text-sm text-muted-foreground hover:text-primary"
-                    >
+                      className="text-sm text-muted-foreground hover:text-primary">
                       6th Floor, Polystar Building, Marwa Bus-stop
                       <br />
                       128 Remi Olowode Street, Lekki Phase 1
@@ -371,8 +365,7 @@ export function ContactSection() {
                     <p className="text-sm text-muted-foreground">
                       <a
                         href="tel:+2348171615134"
-                        className="hover:text-primary transition-colors"
-                      >
+                        className="hover:text-primary transition-colors">
                         (+234) 817 161 5134
                       </a>
                     </p>
@@ -397,15 +390,13 @@ export function ContactSection() {
                     <p className="text-sm text-muted-foreground">
                       <a
                         href="mailto:info@whitenlighten.com"
-                        className="hover:text-primary transition-colors"
-                      >
+                        className="hover:text-primary transition-colors">
                         info@whitenlighten.com
                       </a>
                       <br />
                       <a
                         href="mailto:whitenlightenlounge@gmail.com"
-                        className="hover:text-primary transition-colors"
-                      >
+                        className="hover:text-primary transition-colors">
                         whitenlightenlounge@gmail.com
                       </a>
                     </p>
