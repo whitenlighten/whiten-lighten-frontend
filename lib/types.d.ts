@@ -46,6 +46,7 @@ interface UserProps {
   email: string;
   firstName: string;
   lastName: string;
+  staffCode: string;
   phone: string;
   role: string;
   password: string;

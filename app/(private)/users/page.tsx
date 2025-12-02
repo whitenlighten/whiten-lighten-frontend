@@ -77,6 +77,8 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
             showSearch={false}
             columns={user_columns}
             data={filteredRecords}
+            rowLinkKey="id"
+            rowLinkPrefix="/users/"
           />
           <br />
           {users?.totalRecord >= 20 && (
