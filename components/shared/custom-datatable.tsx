@@ -35,6 +35,8 @@ import { Input } from "../ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  rowLinkKey?: keyof TData; // e.g. "patientId"
+  rowLinkPrefix?: string;
   showSearch: boolean;
   showColumnButton: boolean;
 }
@@ -43,6 +45,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   showSearch,
+  rowLinkKey,
+  rowLinkPrefix,
   showColumnButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -102,8 +106,7 @@ export function DataTable<TData, TValue>({
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
-                      }
-                    >
+                      }>
                       {column.id}
                     </DropdownMenuCheckboxItem>
                   );
@@ -138,9 +141,23 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                >
+                  onClick={() => {
+                    if (rowLinkKey && rowLinkPrefix) {
+                      const id = row.original[rowLinkKey];
+                      if (id) window.location.href = `${rowLinkPrefix}${id}`;
+                    }
+                  }}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        if (rowLinkKey && rowLinkPrefix) {
+                          const id = row.original[rowLinkKey];
+                          if (id)
+                            window.location.href = `${rowLinkPrefix}${id}`;
+                        }
+                      }}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -153,8 +170,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                  className="h-24 text-center">
                   <div className="text-center py-8 sm:py-12 text-gray-500">
                     <Search className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 text-gray-300" />
                     <p className="text-base sm:text-lg font-medium mb-2">

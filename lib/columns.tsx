@@ -1,14 +1,9 @@
 "use client";
 
-import ApproveAppointment from "@/components/shared/approve-appointment";
-import CancelAppointment from "@/components/shared/cancel-appointment";
-import CompleteAppointment from "@/components/shared/complete-appointment";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -18,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { AppointmentStatus, RegistrationType, Role } from "@prisma/client";
+import { AppointmentStatus, Role } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { EllipsisVertical, Eye, SquarePen } from "lucide-react";
@@ -53,6 +48,10 @@ export const user_columns: ColumnDef<UserProps>[] = [
     cell: ({ row }) => {
       return <div className="">{row.original.phone ?? "- - "}</div>;
     },
+  },
+  {
+    accessorKey: "staffCode",
+    header: "Staff Code",
   },
   {
     accessorKey: "role",
@@ -147,6 +146,7 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
     accessorKey: "phone",
     header: "Phone Address",
   },
+
   {
     accessorKey: "gender",
     header: "Gender",

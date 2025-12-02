@@ -58,11 +58,11 @@ export function DashboardHeader({ user }: { user: UserI }) {
     ...(!["PATIENT"].includes(user.role)
       ? [
           { href: "/patients", label: "Patients", icon: Users },
-          {
-            href: "/clinical",
-            label: "Clinical Notes",
-            icon: FileText,
-          },
+          // {
+          //   href: "/clinical",
+          //   label: "Clinical Notes",
+          //   icon: FileText,
+          // },
         ]
       : []),
     {
@@ -104,8 +104,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                 href={item.href}
                 className={`${
                   pathname === item.href ? "text-blue-600" : "text-gray-600"
-                } flex items-center space-x-2  hover:text-blue-600 transition-colors`}
-              >
+                } flex items-center space-x-2  hover:text-blue-600 transition-colors`}>
                 <item.icon className="w-4 h-4" />
                 <span className="text-sm font-medium">{item.label}</span>
               </Link>
@@ -119,8 +118,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-3 hover:bg-blue-50"
-                >
+                  className="flex items-center space-x-3 hover:bg-blue-50">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src="/placeholder-user.jpg" alt={fullName} />
                     <AvatarFallback className="bg-blue-100 text-blue-700 text-sm">
@@ -134,8 +132,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                     <Badge
                       className={`text-xs ${getRoleBadgeColor(
                         user.role as Role
-                      )}`}
-                    >
+                      )}`}>
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </Badge>
                   </div>
@@ -164,8 +161,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="text-red-600 focus:text-red-600"
-                >
+                  className="text-red-600 focus:text-red-600">
                   <LogOut className="w-4 h-4 mr-2" />
                   Sign Out
                 </DropdownMenuItem>
@@ -178,8 +174,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                 variant="ghost"
                 size="sm"
                 className="lg:hidden"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                 {isMobileMenuOpen ? (
                   <X className="w-5 h-5" />
                 ) : (
@@ -199,8 +194,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                   key={item.href}
                   href={item.href}
                   className="flex items-center space-x-3 px-3 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
+                  onClick={() => setIsMobileMenuOpen(false)}>
                   <item.icon className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
                 </Link>

@@ -57,6 +57,7 @@ export const FIELDS = [
   "role",
   "isActive",
   "lastLogin",
+  "staffCode",
 ];
 
 export const PATIENTFIELDS = [
