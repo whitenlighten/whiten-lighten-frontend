@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   rowLinkKey?: keyof TData; // e.g. "patientId"
   rowLinkPrefix?: string;
+  rowLinkSuffix?: string;
   showSearch: boolean;
   showColumnButton: boolean;
 }
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
   showSearch,
   rowLinkKey,
   rowLinkPrefix,
+  rowLinkSuffix,
   showColumnButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -144,7 +146,9 @@ export function DataTable<TData, TValue>({
                   onClick={() => {
                     if (rowLinkKey && rowLinkPrefix) {
                       const id = row.original[rowLinkKey];
-                      if (id) window.location.href = `${rowLinkPrefix}${id}`;
+                      const suffix = rowLinkSuffix ?? "";
+                      if (id)
+                        window.location.href = `${rowLinkPrefix}${id}${suffix}`;
                     }
                   }}>
                   {row.getVisibleCells().map((cell) => (
@@ -154,8 +158,10 @@ export function DataTable<TData, TValue>({
                       onClick={() => {
                         if (rowLinkKey && rowLinkPrefix) {
                           const id = row.original[rowLinkKey];
+                          const suffix = rowLinkSuffix ?? "";
+
                           if (id)
-                            window.location.href = `${rowLinkPrefix}${id}`;
+                            window.location.href = `${rowLinkPrefix}${id}${suffix}`;
                         }
                       }}>
                       {flexRender(
