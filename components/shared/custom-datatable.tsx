@@ -38,6 +38,9 @@ interface DataTableProps<TData, TValue> {
   rowLinkKey?: keyof TData; // e.g. "patientId"
   rowLinkPrefix?: string;
   rowLinkSuffix?: string;
+  absoluteLink?: boolean;
+  rowLinkGetter?: (row: TData) => string;
+
   showSearch: boolean;
   showColumnButton: boolean;
 }
@@ -49,6 +52,8 @@ export function DataTable<TData, TValue>({
   rowLinkKey,
   rowLinkPrefix,
   rowLinkSuffix,
+  rowLinkGetter,
+  absoluteLink,
   showColumnButton,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -144,11 +149,21 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => {
-                    if (rowLinkKey && rowLinkPrefix) {
+                    // NEW — compute final link
+                    let finalUrl: string | null = null;
+
+                    if (rowLinkGetter) {
+                      finalUrl = rowLinkGetter(row.original);
+                    } else if (absoluteLink && rowLinkKey) {
+                      finalUrl = row.original[rowLinkKey] as unknown as string;
+                    } else if (rowLinkKey && rowLinkPrefix) {
                       const id = row.original[rowLinkKey];
                       const suffix = rowLinkSuffix ?? "";
-                      if (id)
-                        window.location.href = `${rowLinkPrefix}${id}${suffix}`;
+                      if (id) finalUrl = `${rowLinkPrefix}${id}${suffix}`;
+                    }
+
+                    if (finalUrl) {
+                      window.location.href = finalUrl;
                     }
                   }}>
                   {row.getVisibleCells().map((cell) => (

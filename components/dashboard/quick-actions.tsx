@@ -82,32 +82,42 @@ export function QuickActions({ userRole }: QuickActionsProps) {
         color: "bg-green-600 hover:bg-green-700",
         available: true,
       });
-      baseActions.push({
-        title: "Search Patients",
-        description: "Find patient records",
-        href: "/patients",
-        icon: Search,
-        color: "bg-orange-600 hover:bg-orange-700",
-        available: true,
-      });
+      // baseActions.push({
+      //   title: "Search Patients",
+      //   description: "Find patient records",
+      //   href: "/patients",
+      //   icon: Search,
+      //   color: "bg-orange-600 hover:bg-orange-700",
+      //   available: true,
+      // });
     }
 
     // ✅ Clinical notes (doctors + nurses + admins)
-    // if (
-    //   userRole === Role.DOCTOR ||
-    //   userRole === Role.NURSE ||
-    //   userRole === Role.ADMIN ||
-    //   userRole === Role.SUPERADMIN
-    // ) {
-    //   baseActions.push({
-    //     title: "Add Clinical Note",
-    //     description: "Document patient treatment",
-    //     href: "/clinical/new",
-    //     icon: FileText,
-    //     color: "bg-indigo-600 hover:bg-indigo-700",
-    //     available: true,
-    //   });
-    // }
+    if (userRole === Role.DOCTOR) {
+      baseActions.push({
+        title: "Add Clinical Note",
+        description: "Document patient treatment",
+        href: "/clinical/new",
+        icon: FileText,
+        color: "bg-indigo-600 hover:bg-indigo-700",
+        available: true,
+      });
+    }
+    if (
+      userRole === Role.DOCTOR ||
+      userRole === Role.NURSE ||
+      userRole === Role.ADMIN ||
+      userRole === Role.SUPERADMIN
+    ) {
+      baseActions.push({
+        title: "View Clinical Notes",
+        description: "Document patient treatment",
+        href: "/clinical",
+        icon: FileText,
+        color: "bg-indigo-600 hover:bg-indigo-700",
+        available: true,
+      });
+    }
 
     // ✅ Only admins & superadmins manage users
     if (userRole === Role.ADMIN || userRole === Role.SUPERADMIN) {
@@ -175,10 +185,9 @@ export function QuickActions({ userRole }: QuickActionsProps) {
                 Practice Hours
               </p>
               <p className="text-xs text-blue-700 mt-1">
-                Monday - Friday: 8:00 AM - 6:00 PM
+                Monday - Saturday :
                 <br />
-                Saturday: 9:00 AM - 2:00 PM
-                <br />
+                9:00 AM - 5:00 PM <br />
                 Sunday: Closed
               </p>
             </div>

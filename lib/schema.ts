@@ -211,6 +211,18 @@ export const updatePatient = z.object({
       message: "Emergency relation should be greater than two characters",
     })
     .optional(),
+
+  allergies: z.string().optional(),
+  chronicConditions: z.string().optional(),
+  pastMedicalHistory: z.string().optional(),
+  pastSurgicalHistory: z.string().optional(),
+  currentMedications: z.string().optional(),
+  immunizationRecords: z.string().optional(),
+  familyHistory: z.string().optional(),
+
+  insuranceProvider: z.string().optional(),
+  insuranceNumber: z.string().optional(),
+  paymentMethod: z.string().optional(),
   // registrationType: z.string().optional(),
   // registeredById: z.string().optional(),
 });

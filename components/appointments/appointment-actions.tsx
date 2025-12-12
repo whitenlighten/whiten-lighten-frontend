@@ -1,8 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import {
   approveAppointement,
   cancelAppointment,
@@ -10,6 +7,9 @@ import {
 } from "@/actions/appointment";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -18,14 +18,20 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+
+interface StaffOption {
+  id: string;
+  name: string;
+}
 
 interface AppointmentActionsProps {
   appointmentId: string;
   status: string;
   role: string | undefined;
-  doctors: { id: string; name: string }[];
+  doctors: StaffOption[];
+  nurses: StaffOption[];
   assignedDoctorId?: string | null;
+  assignedNurseId?: string | null;
 }
 
 export function AppointmentActions({
@@ -33,17 +39,20 @@ export function AppointmentActions({
   status,
   role,
   doctors,
+  nurses,
   assignedDoctorId,
+  assignedNurseId,
 }: AppointmentActionsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [loadingAction, setLoadingAction] = useState<
-    "approve" | "cancel" | "assign" | null
+    "approve" | "cancel" | "assignDoctor" | "assignNurse" | null
   >(null);
 
-  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showAssignDoctorDialog, setShowAssignDoctorDialog] = useState(false);
+  const [showAssignNurseDialog, setShowAssignNurseDialog] = useState(false);
   const [doctorId, setDoctorId] = useState("");
-  const doctorAlreadyAssigned = Boolean(assignedDoctorId);
+  const [nurseId, setNurseId] = useState("");
 
   const canAssign =
     role && ["SUPERADMIN", "ADMIN", "FRONTDESK"].includes(role.toUpperCase());
@@ -56,7 +65,7 @@ export function AppointmentActions({
       toast.error("Please select a doctor");
       return;
     }
-    setLoadingAction("assign");
+    setLoadingAction("assignDoctor");
 
     startTransition(async () => {
       try {
@@ -66,7 +75,7 @@ export function AppointmentActions({
         });
         if (res?.success) {
           toast.success("Doctor assigned successfully!");
-          setShowAssignDialog(false);
+          setShowAssignDoctorDialog(false);
           router.refresh();
         } else {
           toast.error(res?.message || "Failed to assign doctor");
@@ -74,6 +83,32 @@ export function AppointmentActions({
       } catch (err) {
         console.error(err);
         toast.error("Error assigning doctor");
+      } finally {
+        setLoadingAction(null);
+      }
+    });
+  };
+  const handleAssignNurse = async () => {
+    if (!nurseId) return toast.error("Please select a nurse");
+
+    setLoadingAction("assignNurse");
+
+    startTransition(async () => {
+      try {
+        const res = await updateAppointment(appointmentId, {
+          nurseId,
+          status: "PENDING",
+        });
+        if (res?.success) {
+          toast.success("Nurse assigned successfully!");
+          setShowAssignNurseDialog(false);
+          router.refresh();
+        } else {
+          toast.error(res?.message || "Failed to assign nurse");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Error assigning nurse");
       } finally {
         setLoadingAction(null);
       }
@@ -131,51 +166,52 @@ export function AppointmentActions({
       {canAssign && (
         <>
           <Button
-            onClick={() => setShowAssignDialog(true)}
+            onClick={() => setShowAssignNurseDialog(true)}
             disabled={isPending}
-            className="bg-blue-600 hover:bg-blue-700">
-            Assign Doctor
+            className="bg-purple-600 hover:bg-purple-700">
+            Assign Nurse
           </Button>
 
-          <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+          <Dialog
+            open={showAssignNurseDialog}
+            onOpenChange={setShowAssignNurseDialog}>
             <DialogContent className="sm:max-w-[420px]">
               <DialogHeader>
-                <DialogTitle>Assign Doctor to Appointment</DialogTitle>
+                <DialogTitle>Assign Nurse</DialogTitle>
               </DialogHeader>
+
               <div className="space-y-4 py-3">
-                <div className="space-y-2">
-                  <Label htmlFor="doctorSelect">Choose Available Doctor</Label>
-                  <select
-                    id="doctorSelect"
-                    value={doctorId}
-                    onChange={(e) => setDoctorId(e.target.value)}
-                    className="w-full border rounded-md px-3 py-2">
-                    <option value="">Select doctor...</option>
-                    {doctors.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Label>Select Nurse</Label>
+                <select
+                  value={nurseId}
+                  onChange={(e) => setNurseId(e.target.value)}
+                  className="w-full border rounded-md px-3 py-2">
+                  <option value="">Choose nurse…</option>
+                  {nurses.map((n) => (
+                    <option key={n.id} value={n.id}>
+                      {n.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <DialogFooter>
                 <Button
                   variant="outline"
-                  onClick={() => setShowAssignDialog(false)}>
+                  onClick={() => setShowAssignNurseDialog(false)}>
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleAssignDoctor}
-                  disabled={isPending || doctorAlreadyAssigned}
-                  className="bg-green-600 hover:bg-green-700">
-                  {loadingAction === "assign" ? (
+                  onClick={handleAssignNurse}
+                  className="bg-purple-600 hover:bg-purple-700"
+                  disabled={isPending}>
+                  {loadingAction === "assignNurse" ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
-                      Assigning...
+                      Assigning…
                     </>
                   ) : (
-                    "Assign"
+                    "Assign Nurse"
                   )}
                 </Button>
               </DialogFooter>

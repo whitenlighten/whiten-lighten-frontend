@@ -1,6 +1,7 @@
 import { getAllAppointments } from "@/actions/appointment";
 import { getRecentActivities } from "@/actions/audit";
 import { getCurrentUser } from "@/actions/auth";
+import { getAllClinicalNotes } from "@/actions/clinical-notes";
 import { getAllPatients } from "@/actions/patients";
 import { getAllUsers } from "@/actions/users";
 // import { AppointmentsWidget } from "@/components/dashboard/appointment-widget";
@@ -23,7 +24,7 @@ export default async function DashboardPage() {
   let stats = {
     totalPatients: 0,
     todayAppointments: 0,
-    pendingNotes: 0,
+    clinicalNotes: 0,
     activeUsers: 0,
   };
 
@@ -31,24 +32,26 @@ export default async function DashboardPage() {
   // Shared query defaults
 
   if (user.role === Role.DOCTOR) {
-    const [patients, appointments, auditLogs] = await Promise.all([
-      getAllPatients({
-        ...basePagination,
-        query: undefined,
-        fields: PATIENTFIELDS,
-        doctorId: user.id,
-      }),
-      getAllAppointments({
-        ...basePagination,
-        doctorId: user.id,
-      }),
-      getRecentActivities({ limit: 10 }),
-    ]);
+    const [patients, appointments, clinicalNotes, auditLogs] =
+      await Promise.all([
+        getAllPatients({
+          ...basePagination,
+          query: undefined,
+          fields: PATIENTFIELDS,
+          doctorId: user.id,
+        }),
+        getAllAppointments({
+          ...basePagination,
+          doctorId: user.id,
+        }),
+        getAllClinicalNotes({}),
+        getRecentActivities({ limit: 10 }),
+      ]);
 
     stats = {
       totalPatients: patients?.totalRecord ?? 0,
       todayAppointments: appointments?.totalRecord ?? 0,
-      pendingNotes: 0, // could later be count of clinical notes by doctorId
+      clinicalNotes: clinicalNotes?.totalRecord ?? 0, // could later be count of clinical notes by doctorId
       activeUsers: 0, // not applicable to doctors
     };
     activities = auditLogs.activities.filter(
@@ -56,30 +59,34 @@ export default async function DashboardPage() {
     );
   } else if (user.role === Role.ADMIN || user.role === Role.SUPERADMIN) {
     // ✅ Admin view (global)
-    const [users, patients, appointments, auditLogs] = await Promise.all([
-      getAllUsers({ fields: FIELDS, ...basePagination }),
-      getAllPatients({ fields: PATIENTFIELDS, ...basePagination }),
-      getAllAppointments({ ...basePagination }),
-      getRecentActivities({ limit: 10 }),
-    ]);
+    const [users, patients, appointments, clinicalNotes, auditLogs] =
+      await Promise.all([
+        getAllUsers({ fields: FIELDS, ...basePagination }),
+        getAllPatients({ fields: PATIENTFIELDS, ...basePagination }),
+        getAllAppointments({ ...basePagination }),
+        getAllClinicalNotes({}),
+        getRecentActivities({ limit: 10 }),
+      ]);
 
     stats = {
       totalPatients: patients?.totalRecord ?? 0,
       todayAppointments: appointments?.totalRecord ?? 0,
-      pendingNotes: 0,
+      clinicalNotes: clinicalNotes?.totalRecord ?? 0,
       activeUsers: users?.totalRecord ?? 0,
     };
     activities = auditLogs.activities;
   } else if (user.role === Role.NURSE) {
-    const [appointments, patients, auditLogs] = await Promise.all([
-      getAllAppointments({ ...basePagination }),
-      getAllPatients({ fields: PATIENTFIELDS, ...basePagination }),
-      getRecentActivities({ limit: 10 }),
-    ]);
+    const [appointments, patients, clinicalNotes, auditLogs] =
+      await Promise.all([
+        getAllAppointments({ ...basePagination }),
+        getAllPatients({ fields: PATIENTFIELDS, ...basePagination }),
+        getAllClinicalNotes({}),
+        getRecentActivities({ limit: 10 }),
+      ]);
     stats = {
       totalPatients: patients?.totalRecord ?? 0,
       todayAppointments: appointments?.totalRecord ?? 0,
-      pendingNotes: 0,
+      clinicalNotes: clinicalNotes?.totalRecord ?? 0,
       activeUsers: 0,
     };
     activities = auditLogs.activities.filter((a: any) => a.type !== "user");
@@ -92,7 +99,7 @@ export default async function DashboardPage() {
     stats = {
       totalPatients: patients?.totalRecord ?? 0,
       todayAppointments: appointments?.totalRecord ?? 0,
-      pendingNotes: 0,
+      clinicalNotes: 0,
       activeUsers: 0,
     };
     activities = auditLogs.activities.filter((a: any) => a.type !== "user");
@@ -100,7 +107,7 @@ export default async function DashboardPage() {
     stats = {
       totalPatients: 0,
       todayAppointments: 0,
-      pendingNotes: 0,
+      clinicalNotes: 0,
       activeUsers: 0,
     };
   }
