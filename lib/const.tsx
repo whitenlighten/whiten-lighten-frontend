@@ -46,6 +46,16 @@ export const URLS = {
   audit: {
     all: "/audit-trail",
   },
+  clinical_notes: {
+    add: "/patients/{patientId}/notes",
+    one: "/patients/{patientId}/notes",
+    all: "/patients/{patientId}/notes/all",
+    update: "/patients/{patientId}/notes/{noteId}",
+    suggestions: "/patients/{patientId}/notes/suggestions",
+    approve_suggestions:
+      "/patients/{patientId}/notes/suggestions/{suggestionId}/approve",
+    patient_details: "/patients/{patientId}/notes/patient-details",
+  },
 };
 
 export const FIELDS = [

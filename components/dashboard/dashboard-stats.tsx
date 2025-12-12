@@ -9,7 +9,7 @@ interface DashboardStatsProps {
   stats: {
     totalPatients: number;
     todayAppointments: number;
-    pendingNotes: number;
+    clinicalNotes: number;
     activeUsers: number;
   };
 }
@@ -37,14 +37,14 @@ export function DashboardStats({ userRole, stats }: DashboardStatsProps) {
     ];
 
     // Add clinical notes stat for roles that can create notes
-    // if (["DOCTOR", "ADMIN", "SUPERADMIN"].includes(userRole)) {
-    //   baseStats.push({
-    //     title: "Pending Notes",
-    //     value: stats.pendingNotes,
-    //     icon: FileText,
-    //     color: "text-orange-600",
-    //   });
-    // }
+    if (["DOCTOR", "NURSE", "ADMIN", "SUPERADMIN"].includes(userRole)) {
+      baseStats.push({
+        title: "Clinical Notes",
+        value: stats.clinicalNotes,
+        icon: FileText,
+        color: "text-orange-600",
+      });
+    }
 
     // Add active users stat for admin roles
     if (["ADMIN", "SUPERADMIN"].includes(userRole)) {

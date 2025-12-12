@@ -146,32 +146,34 @@ export const updatePatientPatch = async (
   const url = `${API}${URLS.patients.update.replace("{id}", id)}`;
 
   try {
-    const payload = {
-      address: value.address,
-      age: value.age,
-      alternatePhone: value.alternatePhone,
-      bloodGroup: value.bloodGroup,
-      country: value.country,
-      dateOfBirth: value.dateOfBirth,
-      email: value.email,
-      emergencyName: value.emergencyName,
-      emergencyPhone: value.emergencyPhone,
-      emergencyRelation: value.emergencyRelation,
-      firstName: value.firstName,
-      gender: value.gender,
-      genotype: value.genotype,
-      lastName: value.lastName,
-      lga: value.lga,
-      maritalStatus: value.maritalStatus,
-      occupation: value.occupation,
-      phone: value.phone,
-      religion: value.religion,
-      state: value.state,
-      middleName: value.middleName,
-    };
+    // const payload = {
+    //   address: value.address,
+    //   age: value.age,
+    //   alternatePhone: value.alternatePhone,
+    //   bloodGroup: value.bloodGroup,
+    //   country: value.country,
+    //   dateOfBirth: value.dateOfBirth,
+    //   email: value.email,
+    //   emergencyName: value.emergencyName,
+    //   emergencyPhone: value.emergencyPhone,
+    //   emergencyRelation: value.emergencyRelation,
+    //   firstName: value.firstName,
+    //   gender: value.gender,
+    //   genotype: value.genotype,
+    //   lastName: value.lastName,
+    //   lga: value.lga,
+    //   maritalStatus: value.maritalStatus,
+    //   occupation: value.occupation,
+    //   phone: value.phone,
+    //   religion: value.religion,
+    //   state: value.state,
+    //   middleName: value.middleName,
+    // };
 
     const fixedPayload = Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, v === "" ? null : v])
+      Object.entries({
+        ...value,
+      }).map(([k, v]) => [k, v === "" ? null : v])
     );
 
     const res = await fetch(url, {

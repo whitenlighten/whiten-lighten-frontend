@@ -1,355 +1,237 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { toast } from "sonner"
-import { User, FileText, Activity, Calendar, Stethoscope } from "lucide-react"
-// import { createClinicalNoteAction } from "@/app/actions/clinical"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { createClinicalNoteAction } from "@/actions/clinical-notes";
+import { Spinner } from "../ui/spinner";
 
-// Sample patients (in real app, fetch from API)
-const SAMPLE_PATIENTS = [
-  { id: "PAT-2024-001", name: "John Doe", age: 39 },
-  { id: "PAT-2024-002", name: "Sarah Johnson", age: 34 },
-  { id: "PAT-2024-003", name: "Michael Brown", age: 46 },
-  { id: "PAT-2024-004", name: "Emma Wilson", age: 29 },
-  { id: "PAT-2024-005", name: "David Chen", age: 42 },
-]
-
-// Treatment types
-const TREATMENT_TYPES = [
-  "Consultation",
-  "Cleaning",
-  "Filling",
-  "Root Canal",
-  "Crown Placement",
-  "Tooth Extraction",
-  "Orthodontic Adjustment",
-  "Periodontal Treatment",
-  "Oral Surgery",
-  "Emergency Treatment",
-]
-
-// Common diagnoses
-const COMMON_DIAGNOSES = [
-  "Dental caries",
-  "Gingivitis",
-  "Periodontitis",
-  "Pulpitis",
-  "Tooth abscess",
-  "Impacted tooth",
-  "Tooth fracture",
-  "Malocclusion",
-  "Oral infection",
-  "TMJ disorder",
-]
-
-export function ClinicalNotesForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedPatient, setSelectedPatient] = useState("")
-  const [requiresFollowUp, setRequiresFollowUp] = useState(false)
-  const router = useRouter()
+export function ClinicalNotesForm({ patients }: { patients: any[] }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState("");
+  const [requiresFollowUp, setRequiresFollowUp] = useState(false);
 
   async function handleSubmit(formData: FormData) {
-    setIsLoading(true)
+    if (!selectedPatient) {
+      toast.error("Please select a patient");
+      return;
+    }
 
-    // try {
-    //   const result = await createClinicalNoteAction(formData)
+    setIsLoading(true);
+    formData.set("patientId", selectedPatient);
 
-    //   if (result.success) {
-    //     toast.success("Clinical note created successfully!")
-    //     router.push("/clinical")
-    //   } else {
-    //     toast.error(result.error || "Failed to create clinical note")
-    //   }
-    // } catch (error) {
-    //   toast.error("An error occurred while creating clinical note")
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    try {
+      const result = await createClinicalNoteAction(formData);
+
+      if (result.success) {
+        toast.success("Clinical note created successfully!");
+        router.push("/clinical");
+      } else {
+        toast.error(result.error || "Failed to create clinical note");
+      }
+    } catch (err) {
+      toast.error("Error creating clinical note");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const selectedPatientData = SAMPLE_PATIENTS.find((patient) => patient.id === selectedPatient)
-
   return (
-    <form action={handleSubmit} className="space-y-6">
-      {/* Patient Selection */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900 flex items-center">
-            <User className="w-5 h-5 mr-2" />
-            Patient Information
-          </CardTitle>
-          <CardDescription>Select the patient for this clinical note</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <Label htmlFor="patient">Select Patient *</Label>
-            <select
-              id="patient"
-              name="patientId"
-              value={selectedPatient}
-              onChange={(e) => setSelectedPatient(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-blue-200 rounded-md focus:border-blue-400 focus:outline-none"
-            >
-              <option value="">Choose a patient...</option>
-              {SAMPLE_PATIENTS.map((patient) => (
-                <option key={patient.id} value={patient.id}>
-                  {patient.name} ({patient.id})
-                </option>
-              ))}
-            </select>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.currentTarget));
+      }}
+      className="space-y-10">
+      {/* ====================================================
+          SECTION: PATIENT INFO
+      ==================================================== */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-800">Patient Details</h2>
+        <p className="text-gray-600 mb-3">Select the patient for this note</p>
 
-            {selectedPatientData && (
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-2">
-                  <User className="w-4 h-4 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-900">{selectedPatientData.name}</p>
-                    <p className="text-sm text-blue-600">{selectedPatientData.age} years old</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        <select
+          name="patientId"
+          value={selectedPatient}
+          onChange={(e) => setSelectedPatient(e.target.value)}
+          required
+          className="w-full border p-2 rounded">
+          <option value="">Select a patient...</option>
+          {patients.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.firstName} {p.lastName} ({p.patientId})
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {/* Treatment Information */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900 flex items-center">
-            <FileText className="w-5 h-5 mr-2" />
-            Treatment Information
-          </CardTitle>
-          <CardDescription>Document the treatment provided</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="treatmentType">Treatment Type *</Label>
-              <select
-                id="treatmentType"
-                name="treatmentType"
-                required
-                className="w-full px-3 py-2 border border-blue-200 rounded-md focus:border-blue-400 focus:outline-none"
-              >
-                <option value="">Select treatment type...</option>
-                {TREATMENT_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* ====================================================
+          S — SUBJECTIVE
+      ==================================================== */}
+      <div>
+        <h2 className="text-xl font-bold text-blue-700">S — Subjective</h2>
+        <p className="text-gray-600 mb-3">
+          Patient-reported symptoms and history
+        </p>
 
-            <div className="space-y-2">
-              <Label htmlFor="diagnosis">Diagnosis *</Label>
-              <select
-                id="diagnosis"
-                name="diagnosis"
-                required
-                className="w-full px-3 py-2 border border-blue-200 rounded-md focus:border-blue-400 focus:outline-none"
-              >
-                <option value="">Select diagnosis...</option>
-                {COMMON_DIAGNOSES.map((diagnosis) => (
-                  <option key={diagnosis} value={diagnosis}>
-                    {diagnosis}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+        <div className="space-y-4">
+          {/* <Textarea
+            name="chiefComplaint"
+            required
+            placeholder="Chief Complaint *"
+          /> */}
+          <Textarea name="presentComplaint" placeholder="Present Complaint" />
+          <Textarea
+            name="historyOfPresentComplaint"
+            placeholder="History of Present Complaint"
+          />
+          <Textarea name="dentalHistory" placeholder="Dental History" />
+          <Textarea name="medicalHistory" placeholder="Medical History" />
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
+      {/* ====================================================
+          O — OBJECTIVE
+      ==================================================== */}
+      <div>
+        <h2 className="text-xl font-bold text-green-700">O — Objective</h2>
+        <p className="text-gray-600 mb-3">Clinical findings and observations</p>
+
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Input
+            name="bloodPressure"
+            placeholder="Blood Pressure (e.g. 120/80)"
+          />
+          <Input name="pulse" type="number" placeholder="Pulse (bpm)" />
+          <Input
+            name="temperature"
+            type="number"
+            step="0.1"
+            placeholder="Temperature (°C)"
+          />
+        </div> */}
+
+        <div className="space-y-4 mt-4">
+          <Textarea name="eoe" placeholder="Extra Oral Examination (EOE)" />
+          <Textarea name="ioe" placeholder="Intra Oral Examination (IOE)" />
+          <Textarea name="observations" placeholder="Observations" />
+          <Textarea name="investigation" placeholder="Investigation" />
+        </div>
+      </div>
+
+      {/* ====================================================
+          A — ASSESSMENT
+      ==================================================== */}
+      <div>
+        <h2 className="text-xl font-bold text-orange-700">A — Assessment</h2>
+        <p className="text-gray-600 mb-3">
+          Diagnosis, impressions, and clinical judgment
+        </p>
+
+        {/* <Input name="diagnosis" required placeholder="Diagnosis *" /> */}
+
+        <Textarea
+          name="impression"
+          placeholder="Impression (comma separated, e.g. gingivitis, pulpitis)"
+          className="mt-4"
+        />
+
+        <Textarea
+          name="doctorNotes"
+          placeholder="Doctor Notes"
+          className="mt-4"
+        />
+      </div>
+
+      {/* ====================================================
+          P — PLAN
+      ==================================================== */}
+      <div className="">
+        <h2 className="text-xl font-bold text-red-700">P — Plan</h2>
+        <p className="text-gray-600 mb-3">Treatment performed & future plan</p>
+        <div className="space-y-3">
+          <Textarea name="treatmentDone" placeholder="Treatment Done" />
+          <Textarea name="treatmentPlan" placeholder="Treatment Plan" />
+        </div>
+        <Textarea
+          name="recommendedTreatments"
+          placeholder="Recommended Treatments (comma separated)"
+          className="mt-4"
+        />
+
+        {/* <Textarea
+          name="medications"
+          placeholder="Medications"
+          className="mt-4"
+        /> */}
+
+        <Textarea
+          name="dosageInstructions"
+          placeholder="Dosage Instructions"
+          className="mt-4"
+        />
+
+        <Input
+          name="estimatedDuration"
+          placeholder="Estimated Treatment Duration (e.g. 2 weeks)"
+          className="mt-4"
+        />
+
+        {/* Follow up */}
+        <div className="flex items-center gap-2 mt-4">
+          <input
+            type="checkbox"
+            name="requiresFollowUp"
+            onChange={(e) => setRequiresFollowUp(e.target.checked)}
+          />
+          <Label>Requires follow-up?</Label>
+        </div>
+
+        {requiresFollowUp && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <Input name="followUpDate" type="date" />
             <Input
-              id="chiefComplaint"
-              name="chiefComplaint"
-              placeholder="Patient's main concern or reason for visit"
-              required
-              className="border-blue-200 focus:border-blue-400"
+              name="followUpInstructions"
+              placeholder="Follow-up Instructions"
             />
           </div>
+        )}
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="treatment">Treatment Description *</Label>
-            <Textarea
-              id="treatment"
-              name="treatment"
-              placeholder="Detailed description of treatment provided..."
-              rows={4}
-              required
-              className="border-blue-200 focus:border-blue-400"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* ====================================================
+          META (AUTO-FILLED)
+      ==================================================== */}
+      <input
+        type="hidden"
+        name="date"
+        value={new Date().toISOString().split("T")[0]}
+      />
 
-      {/* Vital Signs */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900 flex items-center">
-            <Activity className="w-5 h-5 mr-2" />
-            Vital Signs
-          </CardTitle>
-          <CardDescription>Record patient vital signs (optional)</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="bloodPressure">Blood Pressure</Label>
-              <Input
-                id="bloodPressure"
-                name="bloodPressure"
-                placeholder="120/80"
-                className="border-blue-200 focus:border-blue-400"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pulse">Pulse (bpm)</Label>
-              <Input
-                id="pulse"
-                name="pulse"
-                type="number"
-                placeholder="72"
-                className="border-blue-200 focus:border-blue-400"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="temperature">Temperature (°C)</Label>
-              <Input
-                id="temperature"
-                name="temperature"
-                type="number"
-                step="0.1"
-                placeholder="36.5"
-                className="border-blue-200 focus:border-blue-400"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Medications */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900 flex items-center">
-            <Stethoscope className="w-5 h-5 mr-2" />
-            Medications & Prescriptions
-          </CardTitle>
-          <CardDescription>Document any medications prescribed or administered</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="medications">Medications Prescribed</Label>
-            <Textarea
-              id="medications"
-              name="medications"
-              placeholder="e.g., Amoxicillin 500mg TID for 7 days, Ibuprofen 600mg QID PRN"
-              rows={3}
-              className="border-blue-200 focus:border-blue-400"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dosageInstructions">Dosage Instructions</Label>
-            <Textarea
-              id="dosageInstructions"
-              name="dosageInstructions"
-              placeholder="Specific instructions for medication administration..."
-              rows={2}
-              className="border-blue-200 focus:border-blue-400"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Follow-up Care */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900 flex items-center">
-            <Calendar className="w-5 h-5 mr-2" />
-            Follow-up Care
-          </CardTitle>
-          <CardDescription>Schedule and document follow-up requirements</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="requiresFollowUp"
-              checked={requiresFollowUp}
-              onCheckedChange={(checked) => setRequiresFollowUp(checked as boolean)}
-            />
-            <Label htmlFor="requiresFollowUp">Patient requires follow-up appointment</Label>
-          </div>
-
-          {requiresFollowUp && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="followUpDate">Follow-up Date</Label>
-                <Input
-                  id="followUpDate"
-                  name="followUpDate"
-                  type="date"
-                  min={new Date().toISOString().split("T")[0]}
-                  className="border-blue-200 focus:border-blue-400"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="followUpInstructions">Follow-up Instructions</Label>
-                <Input
-                  id="followUpInstructions"
-                  name="followUpInstructions"
-                  placeholder="e.g., Return in 2 weeks for crown preparation"
-                  className="border-blue-200 focus:border-blue-400"
-                />
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Additional Notes */}
-      <Card className="border-blue-100">
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-900">Additional Clinical Notes</CardTitle>
-          <CardDescription>Any additional observations or notes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Label htmlFor="additionalNotes">Clinical Observations</Label>
-            <Textarea
-              id="additionalNotes"
-              name="additionalNotes"
-              placeholder="Additional clinical observations, patient behavior, complications, etc..."
-              rows={4}
-              className="border-blue-200 focus:border-blue-400"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Form Actions */}
-      <div className="flex justify-end space-x-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          className="border-blue-200 text-blue-600 hover:bg-blue-50"
-        >
+      {/* FORM ACTIONS */}
+      <div className="flex justify-end gap-4 pt-6">
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
-          {isLoading ? "Creating..." : "Create Clinical Note"}
+
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="flex items-center gap-2">
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <Spinner />
+              Saving...
+            </span>
+          ) : (
+            "Save Clinical Note"
+          )}
         </Button>
       </div>
     </form>
-  )
+  );
 }

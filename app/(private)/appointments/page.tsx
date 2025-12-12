@@ -90,6 +90,9 @@ export default async function Appointments(props: {
             showSearch={false}
             columns={appointment_columns}
             data={appointments?.appointments ?? []}
+            rowLinkKey="id"
+            rowLinkPrefix="/appointments/"
+            rowLinkSuffix="/details"
           />
 
           <br />

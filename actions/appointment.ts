@@ -168,7 +168,13 @@ export const approveAppointement = async (id: string) => {
 
 export const updateAppointment = async (
   id: string,
-  payload: { doctorId: string; reason?: string; date?: string; status?: string }
+  payload: {
+    doctorId?: string;
+    nurseId?: string;
+    reason?: string;
+    date?: string;
+    status?: string;
+  }
 ) => {
   const url = `${API}${URLS.appointment.update.replace("{id}", id)}`;
   const session = await auth();

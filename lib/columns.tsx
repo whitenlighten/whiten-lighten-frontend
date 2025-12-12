@@ -249,7 +249,50 @@ export const patient_columns: ColumnDef<PatientProps>[] = [
     },
   },
 ];
+export const clinical_notes_columns: ColumnDef<any>[] = [
+  {
+    accessorKey: "patientId",
+    header: "Patient ID",
+    cell: ({ row }) => (
+      <p className="text-[12px] pl-[10px] ">{row.original.patientId}</p>
+    ),
+  },
+  {
+    accessorKey: "presentComplaint",
+    header: "Present Complaint",
+    cell: ({ row }) => row.original.extendedData?.presentComplaint ?? "—",
+  },
+  {
+    accessorKey: "treatmentPlan",
+    header: "Treatment Plan",
+    cell: ({ row }) => row.original.treatmentPlan ?? "—",
+  },
+  {
+    accessorKey: "observations",
+    header: "Observations",
+    cell: ({ row }) => row.original.observations ?? "—",
+  },
+  {
+    accessorKey: "dentistName",
+    header: "Doctor",
+    cell: ({ row }) => row.original.extendedData?.dentistName ?? "—",
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => row.original.extendedData?.date,
+  },
 
+  // {
+  //   accessorKey: "status",
+  //   header: () => <div className="text-center">Status</div>,
+  //   cell: ({ row }) => (
+  //     <div className="font-bold cursor-default py-[7px] px-[15px] text-[12px] text-center rounded-full bg-blue-100 text-blue-700">
+  //       {row.original.status}
+  //     </div>
+  //   ),
+  // },
+];
 export const appointment_columns: ColumnDef<AppointmentProps>[] = [
   {
     accessorKey: "patientId",
