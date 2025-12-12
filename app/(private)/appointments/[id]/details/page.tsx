@@ -54,6 +54,19 @@ export default async function AppointmentDetailsPage({
       name: `${d.firstName} ${d.lastName}`,
     })) ?? [];
 
+  const nursesResponse = await getAllUsers({
+    page: 1,
+    limit: 100,
+    role: "NURSE",
+    fields: ["id", "firstName", "lastName", "role"],
+  });
+
+  const nurses =
+    nursesResponse?.records?.map((n) => ({
+      id: n.id,
+      name: `${n.firstName} ${n.lastName}`,
+    })) ?? [];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
@@ -172,28 +185,65 @@ export default async function AppointmentDetailsPage({
         <Card className="border-blue-100">
           <CardHeader>
             <CardTitle className="flex items-center text-blue-900">
-              <Stethoscope className="w-5 h-5 mr-2" /> Assigned Doctor
+              <Stethoscope className="w-5 h-5 mr-2" /> Assigned Medical Staff
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Doctor Name</p>
-                <p className="font-medium">
-                  Dr. {doctor?.firstName} {doctor?.lastName}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Email</p>
-                <p className="font-medium flex items-center gap-1">
-                  <Mail className="w-4 h-4 text-gray-500" /> {doctor?.email}
-                </p>
-              </div>
-              {doctor?.specialization && (
-                <div>
-                  <p className="text-sm text-gray-600">Specialization</p>
-                  <p className="font-medium">{doctor?.specialization}</p>
+          <CardContent className="space-y-6">
+            {/* Doctor Section */}
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">
+                Assigned Doctor
+              </h3>
+              {doctor ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Doctor Name</p>
+                    <p className="font-medium">
+                      Dr. {doctor.firstName} {doctor.lastName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="font-medium flex items-center gap-1">
+                      <Mail className="w-4 h-4 text-gray-500" /> {doctor.email}
+                    </p>
+                  </div>
+
+                  {doctor.specialization && (
+                    <div>
+                      <p className="text-sm text-gray-600">Specialization</p>
+                      <p className="font-medium">{doctor.specialization}</p>
+                    </div>
+                  )}
                 </div>
+              ) : (
+                <p className="text-gray-500 italic">No doctor assigned.</p>
+              )}
+            </div>
+
+            {/* Nurse Section */}
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2">
+                Assigned Nurse
+              </h3>
+              {appointment.nurse ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Nurse Name</p>
+                    <p className="font-medium">
+                      {appointment.nurse.firstName} {appointment.nurse.lastName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="font-medium flex items-center gap-1">
+                      <Mail className="w-4 h-4 text-gray-500" />{" "}
+                      {appointment.nurse.email}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No nurse assigned.</p>
               )}
             </div>
           </CardContent>
@@ -205,7 +255,9 @@ export default async function AppointmentDetailsPage({
           status={appointment.status}
           role={user?.role}
           doctors={doctors}
+          nurses={nurses}
           assignedDoctorId={appointment.doctor?.id}
+          assignedNurseId={appointment.nurse?.id}
         />
       </main>
     </div>

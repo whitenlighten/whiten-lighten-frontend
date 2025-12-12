@@ -56,8 +56,9 @@ export default async function PatientDetailPage({
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <Badge
-                  className={getPatientStatusColor(patient?.status || "ACTIVE")}
-                >
+                  className={getPatientStatusColor(
+                    patient?.status || "ACTIVE"
+                  )}>
                   {patient?.status}
                 </Badge>
                 <Badge variant="outline">{patient?.gender}</Badge>
@@ -392,8 +393,7 @@ export default async function PatientDetailPage({
                     variant="outline"
                     className={`mt-1 ${getRoleBadgeColor(
                       patient?.registrationType ?? "FRONTDESK"
-                    )}`}
-                  >
+                    )}`}>
                     {patient?.registrationType}
                   </Badge>
                 </div>

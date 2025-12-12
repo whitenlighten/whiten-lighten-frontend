@@ -56,13 +56,15 @@ export function DashboardHeader({ user }: { user: UserI }) {
       ? [{ href: "/users", label: "Users", icon: User }]
       : []),
     ...(!["PATIENT"].includes(user.role)
+      ? [{ href: "/patients", label: "Patients", icon: Users }]
+      : []),
+    ...(!["PATIENT", "FRONTDESK"].includes(user.role)
       ? [
-          { href: "/patients", label: "Patients", icon: Users },
-          // {
-          //   href: "/clinical",
-          //   label: "Clinical Notes",
-          //   icon: FileText,
-          // },
+          {
+            href: "/clinical",
+            label: "Clinical Notes",
+            icon: FileText,
+          },
         ]
       : []),
     {
@@ -146,7 +148,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link href="/profile" className="flex items-center">
                     <User className="w-4 h-4 mr-2" />
                     Profile Settings
@@ -157,7 +159,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                     <Settings className="w-4 h-4 mr-2" />
                     System Settings
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}

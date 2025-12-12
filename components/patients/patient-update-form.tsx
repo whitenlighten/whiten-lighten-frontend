@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Separator } from "../ui/separator";
 
 export type UpdatePatientValues = z.infer<typeof updatePatient>;
 export default function PatientUpdateForm({
@@ -83,6 +84,16 @@ export default function PatientUpdateForm({
       phone: patient?.phone ?? "",
       religion: patient?.religion ?? "Christian",
       state: patient?.state ?? "",
+      allergies: patient?.allergies ?? "",
+      chronicConditions: patient?.chronicConditions ?? "",
+      pastMedicalHistory: patient?.pastMedicalHistory ?? "",
+      pastSurgicalHistory: patient?.pastSurgicalHistory ?? "",
+      currentMedications: patient?.currentMedications ?? "",
+      immunizationRecords: patient?.immunizationRecords ?? "",
+      familyHistory: patient?.familyHistory ?? "",
+      insuranceProvider: patient?.insuranceProvider ?? "",
+      insuranceNumber: patient?.insuranceNumber ?? "",
+      paymentMethod: patient?.paymentMethod ?? "",
       // registeredById: session.data?.user?.id,
       // registrationType: session.data?.user?.role,
     },
@@ -123,8 +134,7 @@ export default function PatientUpdateForm({
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit(form.getValues());
-        }}
-      >
+        }}>
         <Card className="border-blue-100">
           <CardHeader>
             <CardTitle className="text-lg text-blue-900 flex items-center">
@@ -195,8 +205,7 @@ export default function PatientUpdateForm({
                           variant="outline"
                           disabled={!isEditing}
                           id="date"
-                          className="w-full justify-between font-normal"
-                        >
+                          className="w-full justify-between font-normal">
                           {field.value
                             ? format(new Date(field.value), "PPP")
                             : "No information provided"}
@@ -205,8 +214,7 @@ export default function PatientUpdateForm({
                       </PopoverTrigger>
                       <PopoverContent
                         className="w-auto overflow-hidden p-0"
-                        align="start"
-                      >
+                        align="start">
                         <Calendar
                           mode="single"
                           captionLayout="dropdown"
@@ -264,13 +272,11 @@ export default function PatientUpdateForm({
                         onValueChange={field.onChange}
                         defaultValue={
                           patient?.gender ? patient.gender : field.value
-                        }
-                      >
+                        }>
                         <FormControl>
                           <SelectTrigger
                             disabled={!isEditing}
-                            className=" w-full"
-                          >
+                            className=" w-full">
                             <SelectValue placeholder="Select gentder"></SelectValue>
                           </SelectTrigger>
                         </FormControl>
@@ -303,13 +309,11 @@ export default function PatientUpdateForm({
                       <FormLabel>Marital Status</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                        defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger
                             disabled={!isEditing}
-                            className=" w-full"
-                          >
+                            className=" w-full">
                             <SelectValue placeholder="Select a gender" />
                           </SelectTrigger>
                         </FormControl>
@@ -318,8 +322,7 @@ export default function PatientUpdateForm({
                             <SelectItem
                               className=""
                               value={marital_status}
-                              key={k}
-                            >
+                              key={k}>
                               {marital_status}
                             </SelectItem>
                           ))}
@@ -346,13 +349,11 @@ export default function PatientUpdateForm({
                       <FormLabel>Religion</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                        defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger
                             disabled={!isEditing}
-                            className=" w-full"
-                          >
+                            className=" w-full">
                             <SelectValue placeholder="Select a gender" />
                           </SelectTrigger>
                         </FormControl>
@@ -402,13 +403,11 @@ export default function PatientUpdateForm({
                       <FormLabel>Blood Group</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                        defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger
                             disabled={!isEditing}
-                            className=" w-full"
-                          >
+                            className=" w-full">
                             <SelectValue placeholder="Select a blood group" />
                           </SelectTrigger>
                         </FormControl>
@@ -417,8 +416,7 @@ export default function PatientUpdateForm({
                             <SelectItem
                               className=""
                               value={bloodgroup.value}
-                              key={k}
-                            >
+                              key={k}>
                               {bloodgroup.name}
                             </SelectItem>
                           ))}
@@ -445,13 +443,11 @@ export default function PatientUpdateForm({
                       <FormLabel>Genotype</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                        defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger
                             disabled={!isEditing}
-                            className=" w-full"
-                          >
+                            className=" w-full">
                             <SelectValue placeholder="Select a gender" />
                           </SelectTrigger>
                         </FormControl>
@@ -472,7 +468,6 @@ export default function PatientUpdateForm({
             </div>
           </CardContent>
         </Card>
-
         <Card className="border-blue-100 mt-[30px]">
           <CardHeader>
             <CardTitle className="text-lg text-blue-900 flex items-center">
@@ -598,7 +593,6 @@ export default function PatientUpdateForm({
             />
           </CardContent>
         </Card>
-
         <Card className="border-blue-100 mt-[30px]">
           <CardHeader>
             <CardTitle className="text-lg text-blue-900 flex items-center">
@@ -662,6 +656,192 @@ export default function PatientUpdateForm({
             </div>
           </CardContent>
         </Card>
+        <Card className="border-blue-100 mt-[30px]">
+          <CardHeader>
+            <CardTitle className="text-lg text-blue-900 flex items-center">
+              <User className="w-5 h-5 mr-2" />
+              Medical & Insurance Information
+            </CardTitle>
+            <CardDescription>
+              Medical background and insurance details
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Medical Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                name="allergies"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Allergies</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="chronicConditions"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Chronic Conditions</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="pastMedicalHistory"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Past Medical History</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="pastSurgicalHistory"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Past Surgical History</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="currentMedications"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Medications</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="immunizationRecords"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Immunization Records</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="familyHistory"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Family History</FormLabel>
+                    <Textarea
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Insurance Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                name="insuranceProvider"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Insurance Provider</FormLabel>
+                    <Input
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="insuranceNumber"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Insurance Number</FormLabel>
+                    <Input
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="None"
+                    />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="paymentMethod"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Payment Method</FormLabel>
+                    <Select
+                      disabled={!isEditing}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select payment method" />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent>
+                        <SelectItem value="CASH">Cash</SelectItem>
+                        <SelectItem value="INSURANCE">Insurance</SelectItem>
+                        <SelectItem value="HMO">HMO</SelectItem>
+                        <SelectItem value="TRANSFER">Transfer</SelectItem>
+                        <SelectItem value="CARD">Card</SelectItem>
+                        <SelectItem value="GATEWAY">Gateway</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="flex mt-[20px] justify-end space-x-4">
           {isEditing && (
@@ -669,8 +849,7 @@ export default function PatientUpdateForm({
               type="button"
               variant="outline"
               onClick={() => setIsEditing(false)}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
+              className="border-blue-200 text-blue-600 hover:bg-blue-50">
               Cancel
             </Button>
           )}
@@ -681,8 +860,7 @@ export default function PatientUpdateForm({
                 window.scrollTo({ top: 0, behavior: "smooth" });
                 setIsEditing(true);
               }}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+              className="bg-blue-600 hover:bg-blue-700">
               Update Patient
             </Button>
           )}
@@ -690,8 +868,7 @@ export default function PatientUpdateForm({
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
+              className="bg-blue-600 hover:bg-blue-700">
               {isLoading ? "Saving" : "Save Changes"}
             </Button>
           )}
