@@ -35,7 +35,7 @@ export const GET = async (
       <div class="bg-gray-50">
         <div class="max-w-6xl mx-auto p-6 space-y-6">
         <p class=" text-3xl font-extrabold text-center" >Patient Details<p/>
-        <p class=" text-[20px] text-center">Whiten Lighten Dental Practice</p>
+        <p class=" text-[20px] text-center">Whiten Lighten Clinic Practice</p>
           <!-- Header -->
           <div class="flex items-start justify-between">
             <div>
@@ -182,7 +182,7 @@ export const GET = async (
   const pdf = await page.pdf({ format: "A4", printBackground: true });
   await browser.close();
 
-  return new NextResponse(pdf, {
+  return new NextResponse(Buffer.from(pdf), {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",

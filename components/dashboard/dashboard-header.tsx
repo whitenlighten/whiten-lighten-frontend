@@ -93,7 +93,7 @@ export function DashboardHeader({ user }: { user: UserI }) {
                 <h1 className="text-xl font-bold text-blue-900">
                   Whiten Lighten
                 </h1>
-                <p className="text-xs text-blue-600">Dental Practice</p>
+                <p className="text-xs text-blue-600">Clinic Practice</p>
               </div>
             </Link>
           </div>
