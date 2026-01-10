@@ -34,10 +34,18 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 
 export type CreateUserValues = z.infer<typeof createUser>;
 
-export function UserCreationForm() {
+export function UserCreationForm({
+  currentUserRole,
+}: {
+  currentUserRole: "SUPERADMIN" | "ADMIN";
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const AVAILABLE_ROLES =
+    currentUserRole === "SUPERADMIN"
+      ? USER_ROLES
+      : USER_ROLES.filter((role) => role.value !== "ADMIN");
 
   const form = useForm<CreateUserValues>({
     defaultValues: {
@@ -73,7 +81,7 @@ export function UserCreationForm() {
       form.reset();
     }
   }
-  const selectedRoleData = USER_ROLES.find(
+  const selectedRoleData = AVAILABLE_ROLES.find(
     (role) => role.value === selectedRole
   );
 
@@ -234,7 +242,7 @@ export function UserCreationForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {USER_ROLES.map((role) => (
+              {AVAILABLE_ROLES.map((role) => (
                 <div
                   key={role.value}
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${

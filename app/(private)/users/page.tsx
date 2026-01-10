@@ -49,7 +49,7 @@ export default async function UsersPage(props: { searchParams: SearchParams }) {
             </h1>
             <p className="text-gray-600">Manage system users and their roles</p>
           </div>
-          {user.role === "SUPERADMIN" && (
+          {["SUPERADMIN", "ADMIN"].includes(user.role) && (
             <Link href="/users/new">
               <Button className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
