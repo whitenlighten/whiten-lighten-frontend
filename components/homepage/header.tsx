@@ -26,20 +26,17 @@ export function Header({ session }: { session: any }) {
           <nav className="hidden md:flex items-center space-x-8">
             <a
               href="#services"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Services
             </a>
             <a
               href="#testimonials"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Testimonials
             </a>
             <a
               href="#contact"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-            >
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors">
               Contact
             </a>
           </nav>
@@ -48,10 +45,11 @@ export function Header({ session }: { session: any }) {
           <div className="hidden md:flex items-center space-x-4">
             <a
               href="tel:+2348171615134"
-              className="flex items-center text-sm text-muted-foreground hover:text-foreground"
-            >
+              className="flex items-center text-sm text-muted-foreground hover:text-foreground">
               <Phone className="h-4 w-4 mr-2" />
-              <span className="hidden lg:inline">(+234) 817 161 5134</span>
+              <span className="hidden lg:inline">
+                +234 8145-4742-98 | +234 9129-7514-05
+              </span>
             </a>
             {session?.user ? (
               <Button asChild size="sm">
@@ -69,8 +67,7 @@ export function Header({ session }: { session: any }) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
+              onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? (
                 <X className="h-5 w-5" />
               ) : (
@@ -86,20 +83,17 @@ export function Header({ session }: { session: any }) {
             <div className="px-2 pt-2 pb-3 space-y-1 border-t border-border">
               <a
                 href="#services"
-                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary"
-              >
+                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
                 Services
               </a>
               <a
                 href="#testimonials"
-                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary"
-              >
+                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
                 Testimonials
               </a>
               <a
                 href="#contact"
-                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary"
-              >
+                className="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary">
                 Contact
               </a>
               <div className="px-3 py-2">

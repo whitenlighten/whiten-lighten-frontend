@@ -31,32 +31,28 @@ export function Footer() {
               <li>
                 <a
                   href="#services"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   General Dentistry
                 </a>
               </li>
               <li>
                 <a
                   href="#services"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Cosmetic Dentistry
                 </a>
               </li>
               <li>
                 <a
                   href="#services"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Orthodontics
                 </a>
               </li>
               <li>
                 <a
                   href="#services"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Teeth Whitening
                 </a>
               </li>
@@ -70,24 +66,21 @@ export function Footer() {
               <li>
                 <a
                   href="#services"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Our Services
                 </a>
               </li>
               <li>
                 <a
                   href="#testimonials"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Testimonials
                 </a>
               </li>
               <li>
                 <a
                   href="#contact"
-                  className="hover:text-primary transition-colors"
-                >
+                  className="hover:text-primary transition-colors">
                   Contact Us
                 </a>
               </li>
@@ -107,9 +100,8 @@ export function Footer() {
                 <Phone className="h-4 w-4" />
                 <a
                   href="tel:+2348171615134"
-                  className="hover:text-primary transition-colors"
-                >
-                  (+234) 817 161 5134
+                  className="hover:text-primary transition-colors">
+                  +234 8145-4742-98 | +234 9129-7514-05
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -117,14 +109,12 @@ export function Footer() {
                 <div className=" flex flex-col">
                   <a
                     href="mailto:info@whitenlighten.com"
-                    className="hover:text-primary transition-colors"
-                  >
+                    className="hover:text-primary transition-colors">
                     info@whitenlighten.com
                   </a>
                   <a
                     href="mailto:whitenlightenlounge@gmail.com"
-                    className="hover:text-primary transition-colors"
-                  >
+                    className="hover:text-primary transition-colors">
                     whitenlightenlounge@gmail.com
                   </a>
                 </div>

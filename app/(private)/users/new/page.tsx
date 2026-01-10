@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function NewUserPage() {
   const user = await getCurrentUser();
+  const session = user;
 
   if (!user) {
     redirect("/");
@@ -24,7 +25,7 @@ export default async function NewUserPage() {
           </p>
         </div>
 
-        <UserCreationForm />
+        <UserCreationForm currentUserRole={user.role} />
       </main>
     </div>
   );
