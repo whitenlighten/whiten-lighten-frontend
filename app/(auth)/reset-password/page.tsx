@@ -1,6 +1,16 @@
 import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ResetPasswordForm } from "@/components/auth/reset-form"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reset Password | Whiten Lighten",
+  description: "Reset your password for your Whiten Lighten dental practice management system account.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface ResetPasswordPageProps {
   searchParams: Promise<{ token?: string }>

@@ -16,10 +16,35 @@ import {
 } from "lucide-react";
 import { AppointmentActions } from "@/components/appointments/appointment-actions";
 import { getAllUsers } from "@/actions/users";
+import type { Metadata } from "next";
 
 type AppointmentDetailsPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: AppointmentDetailsPageProps): Promise<Metadata> {
+  const appointment = await getAppointmentById((await params).id);
+
+  if (!appointment) {
+    return {
+      title: "Appointment Not Found | Whiten Lighten",
+    };
+  }
+
+  const patientName = `${appointment.patient.firstName} ${appointment.patient.lastName}`;
+  const appointmentDate = new Date(appointment.date).toLocaleDateString();
+
+  return {
+    title: `Appointment Details | ${patientName} | ${appointmentDate} | Whiten Lighten`,
+    description: `View appointment details for ${patientName} scheduled on ${appointmentDate} - ${appointment.service} in the Whiten Lighten dental practice management system.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function AppointmentDetailsPage({
   params,

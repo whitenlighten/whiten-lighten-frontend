@@ -12,6 +12,23 @@ import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { FIELDS, PATIENTFIELDS } from "@/lib/const";
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const user = await getCurrentUser();
+  const userName = user
+    ? `${user.firstName} ${user.lastName}`
+    : "User";
+
+  return {
+    title: `Dashboard | ${userName} | Whiten Lighten`,
+    description: `Dashboard for ${userName} - Manage your dental practice operations, view statistics, and recent activities.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();

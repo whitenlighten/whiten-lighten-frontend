@@ -8,8 +8,18 @@ import { clinical_notes_columns } from "@/lib/columns";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export const metadata: Metadata = {
+  title: "Clinical Notes | Whiten Lighten",
+  description: "View and manage all patient clinical documentation in the Whiten Lighten dental practice management system.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function ClinicalPage(props: {
   searchParams: SearchParams;

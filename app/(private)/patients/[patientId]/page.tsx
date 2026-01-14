@@ -25,8 +25,35 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 type Params = Promise<{ patientId: string }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { patientId } = await params;
+  const patient = await getPatientsByID(patientId);
+
+  if (!patient) {
+    return {
+      title: "Patient Not Found | Whiten Lighten",
+    };
+  }
+
+  const patientName = `${patient.firstName} ${patient.lastName}`;
+
+  return {
+    title: `${patientName} | Patient Details | Whiten Lighten`,
+    description: `View detailed patient information for ${patientName} (${patient.patientId}) in the Whiten Lighten dental practice management system.`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function PatientDetailPage({
   params,

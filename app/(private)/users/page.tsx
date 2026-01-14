@@ -10,8 +10,18 @@ import { FIELDS, Roles } from "@/lib/const";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export const metadata: Metadata = {
+  title: "Users | Whiten Lighten",
+  description: "Manage system users and their roles in the Whiten Lighten dental practice management system.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function UsersPage(props: { searchParams: SearchParams }) {
   const session = await auth();

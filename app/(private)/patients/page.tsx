@@ -9,8 +9,20 @@ import { PATIENTFIELDS } from "@/lib/const";
 import { ArchiveRestore, Plus } from "lucide-react";
 import Link from "next/link";
 import { Role } from "@prisma/client";
+import type { Metadata } from "next";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Patients | Whiten Lighten",
+    description: "Manage patient records and information in the Whiten Lighten dental practice management system.",
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function PatientsPage(props: {
   searchParams: SearchParams;

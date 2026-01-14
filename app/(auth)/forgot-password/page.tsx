@@ -1,5 +1,15 @@
 import { ForgotPasswordForm } from "@/components/auth/forgot-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Forgot Password | Whiten Lighten",
+  description: "Reset your password for your Whiten Lighten dental practice management system account.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function ForgotPasswordPage() {
   return (
